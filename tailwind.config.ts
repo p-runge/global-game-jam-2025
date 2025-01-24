@@ -9,6 +9,7 @@ export default {
         sans: ["var(--font-geist-sans)", ...fontFamily.sans],
       },
     },
+    screens: {},
   },
   plugins: [],
 } satisfies Config;
