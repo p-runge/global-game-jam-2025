@@ -1,13 +1,13 @@
 import { useCallback, useState } from "react";
 import type { TDraggable } from "~/components/draggable";
-import { useCardLocationManager } from "./card-location-manager";
+import { useGameManager } from "./game-manager";
 
 export type DroppableId = "player-board" | `opponent-card-${number}`;
 
 export const useDraggingManager = () => {
   const [draggable, setDraggableId] = useState<TDraggable | null>(null);
 
-  const { cardLocations, moveCard } = useCardLocationManager();
+  const { cardLocations, moveCard } = useGameManager();
 
   const moveItem = useCallback(
     (cardId: string, to: DroppableId) => {

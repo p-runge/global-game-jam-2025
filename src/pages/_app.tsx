@@ -4,14 +4,14 @@ import { type AppType } from "next/app";
 import { api } from "~/utils/api";
 
 import "~/styles/globals.css";
-import { CardLocationManagerProvider } from "~/hooks/card-location-manager";
+import { GameManagerProvider } from "~/hooks/game-manager";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <div className={GeistSans.className}>
-      <CardLocationManagerProvider>
+      <GameManagerProvider>
         <Component {...pageProps} />
-      </CardLocationManagerProvider>
+      </GameManagerProvider>
     </div>
   );
 };

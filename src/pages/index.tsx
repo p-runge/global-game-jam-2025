@@ -8,11 +8,11 @@ import { Card } from "~/components/card";
 import Draggable from "~/components/draggable";
 import Droppable from "~/components/droppable";
 import { Frame } from "~/components/frame";
-import { useCardLocationManager } from "~/hooks/card-location-manager";
+import { useGameManager } from "~/hooks/game-manager";
 import { useDraggingManager, type DroppableId } from "~/hooks/dragging-manager";
 
 export default function Home() {
-  const { cardLocations } = useCardLocationManager();
+  const { cardLocations } = useGameManager();
   const { startDragging, moveItem } = useDraggingManager();
 
   function handleDragStart(event: DragStartEvent) {

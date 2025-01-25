@@ -21,15 +21,13 @@ type CardLocation =
 
 type CardLocationMap = Record<CardLocation, Card[]>;
 
-type CardLocationManager = {
+type GameManager = {
   cardLocations: CardLocationMap;
   moveCard: (cardId: string, to: CardLocation) => void;
 };
-const CardLocationManagerContext = createContext<
-  CardLocationManager | undefined
->(undefined);
+const GameManagerContext = createContext<GameManager | undefined>(undefined);
 
-export function CardLocationManagerProvider({
+export function GameManagerProvider({
   children,
 }: {
   children: React.ReactNode;
@@ -106,23 +104,21 @@ export function CardLocationManagerProvider({
   );
 
   return (
-    <CardLocationManagerContext.Provider
+    <GameManagerContext.Provider
       value={{
         cardLocations,
         moveCard,
       }}
     >
       {children}
-    </CardLocationManagerContext.Provider>
+    </GameManagerContext.Provider>
   );
 }
 
-export function useCardLocationManager() {
-  const context = useContext(CardLocationManagerContext);
+export function useGameManager() {
+  const context = useContext(GameManagerContext);
   if (!context) {
-    throw new Error(
-      "useCardLocationManager must be used within a CardLocationManagerProvider",
-    );
+    throw new Error("useGameManager must be used within a GameProvider");
   }
 
   return context;
