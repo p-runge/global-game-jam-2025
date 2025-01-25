@@ -2,15 +2,15 @@ import { DndContext, type DragEndEvent } from "@dnd-kit/core";
 import Head from "next/head";
 import { CARDS } from "~/assets/cards";
 import { Board } from "~/components/board";
-import { Card, TCard } from "~/components/card";
+import { Card, type TCard } from "~/components/card";
 import { Deck } from "~/components/deck";
 import DiscardPile from "~/components/discard-pile";
 import Draggable from "~/components/draggable";
 import Droppable from "~/components/droppable";
 import { Frame } from "~/components/frame";
 import {
-  type DroppableId,
   useDroppableManager,
+  type DroppableId,
 } from "~/hooks/droppable-manager";
 import type { TBoard } from "~/types/TBoard";
 
@@ -35,6 +35,8 @@ export default function Home() {
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+
+    if (!over?.id) return;
 
     if (typeof active?.id !== "string") {
       console.error("Active id is not a string");
@@ -92,7 +94,11 @@ export default function Home() {
                 <Board board={playerBoard}>
                   {droppables["player-board"].map((card) => (
                     <div key={card.id}>
-                      <Draggable id={card.id} droppableId="player-board">
+                      <Draggable
+                        id={card.id}
+                        droppableId="player-board"
+                        isDraggable={false}
+                      >
                         <Card card={card}></Card>
                       </Draggable>
                     </div>
@@ -129,7 +135,11 @@ export default function Home() {
                   key={card.id}
                   className="pointer-events-auto -mx-[45px] origin-bottom scale-50 transition-transform hover:z-10 hover:scale-100"
                 >
-                  <Draggable id={card.id} droppableId="player-hand">
+                  <Draggable
+                    id={card.id}
+                    droppableId="player-hand"
+                    isDraggable={true}
+                  >
                     <Card card={card}></Card>
                   </Draggable>
                 </div>
