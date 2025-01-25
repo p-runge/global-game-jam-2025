@@ -125,24 +125,29 @@ export function GameManagerProvider({
     monsterUpdates: Pick<Monster, "currentSize" | "currentStability">,
   ) {
     const isMonsterDefeated = monsterUpdates.currentStability <= 0;
+    const isPlayerCard = cardLocations["player-board"].some(
+      (c) => c.id === cardId,
+    );
+    if (isMonsterDefeated) {
+      moveCard(
+        cardId,
+        isPlayerCard ? "player-discard-pile" : "opponent-discard-pile",
+      );
+    }
 
     setCardLocations((prevLocations) => {
       const newLocations = { ...prevLocations };
       (Object.entries(newLocations) as [CardLocation, Card[]][]).forEach(
         ([location, cards]) => {
-          newLocations[location] = cards
-            .map((card) =>
-              card.id === cardId
-                ? isMonsterDefeated
-                  ? undefined
-                  : {
-                      ...card,
-                      currentSize: monsterUpdates.currentSize,
-                      currentStability: monsterUpdates.currentStability,
-                    }
-                : card,
-            )
-            .filter(Boolean);
+          newLocations[location] = cards.map((card) =>
+            card.id === cardId
+              ? {
+                  ...card,
+                  currentSize: monsterUpdates.currentSize,
+                  currentStability: monsterUpdates.currentStability,
+                }
+              : card,
+          );
         },
       );
 
