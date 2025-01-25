@@ -31,6 +31,7 @@ export default function Home() {
     name: "player",
     isOpponent: false,
   };
+  /// TODO: correct impl
   const monsterList = api.monster.getAllCards.useQuery();
   console.log("monster list ", monsterList.data);
   const { droppables, moveItem } = useDroppableManager(initialData);

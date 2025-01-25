@@ -21,20 +21,6 @@ model Spell {
     @@index([name])
 }
 
-model Card {
-    id        Int      @id @default(autoincrement())
-    name      String
-    type      String
-    image     String
-    cost      Int
-    stability Int
-    size      Int
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    @@index([name])
-}
-
 model Monster {
     id        Int      @id @default(autoincrement())
     name      String
@@ -42,25 +28,6 @@ model Monster {
     cost      Int
     size      Int
     stability Int
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    @@index([name])
-}
-
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    @@index([name])
-}
-
-model User {
-    id        Int      @id @default(autoincrement())
-    name      String
-    email     String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
