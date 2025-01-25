@@ -12,13 +12,8 @@ import { useGameManager } from "~/hooks/game-manager";
 import { useDraggingManager, type DroppableId } from "~/hooks/dragging-manager";
 
 export default function Home() {
-<<<<<<< HEAD
-  const { cardLocations } = useGameManager();
-  const { startDragging, moveItem, draggable } = useDraggingManager();
-=======
   const { cardLocations, moveCard } = useGameManager();
-  const { startDragging, moveItem } = useDraggingManager();
->>>>>>> d90fb7a (ffs)
+  const { startDragging, moveItem, draggable } = useDraggingManager();
 
   function handleDragStart(event: DragStartEvent) {
     const { active } = event;
