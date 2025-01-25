@@ -2,12 +2,12 @@ import { useCallback, useState } from "react";
 import type { TDraggable } from "~/components/draggable";
 import { useGameManager } from "./game-manager";
 
-export type DroppableId = "player-board" | `opponent-card-${number}`;
+export type DroppableId = "player-board" | `opponent-card-${string}`;
 
 export const useDraggingManager = () => {
   const [draggable, setDraggableId] = useState<TDraggable | null>(null);
 
-  const { cardLocations, moveCard } = useGameManager();
+  const { cardLocations, moveCard, updateMonster } = useGameManager();
 
   const moveItem = useCallback(
     (cardId: string, to: DroppableId) => {
@@ -25,9 +25,29 @@ export const useDraggingManager = () => {
         moveCard(cardId, "player-board");
       } else if (to.startsWith("opponent-card-")) {
         // trigger attack
+        const defenderCardId = to.replace("opponent-card-", "");
+        const defender = cardLocations["opponent-board"].find(
+          (c) => c.id === defenderCardId,
+        );
+        const attacker = cardLocations[from].find((c) => c.id === cardId);
+        if (attacker?.type !== "monster" || defender?.type !== "monster")
+          return;
+
+        const newSize = attacker.currentSize + defender.currentSize;
+        const newStability = attacker.currentStability - defender.currentSize;
+
+        updateMonster(attacker.id, {
+          currentSize: newSize,
+          currentStability: newStability,
+        });
+
+        updateMonster(defender.id, {
+          currentSize: 0,
+          currentStability: 0,
+        });
       }
     },
-    [cardLocations, moveCard],
+    [cardLocations, moveCard, updateMonster],
   );
 
   const startDragging = useCallback((draggable: TDraggable) => {
@@ -36,5 +56,5 @@ export const useDraggingManager = () => {
 
   const droppables = draggable?.droppableIds ?? [];
 
-  return { droppables, startDragging, moveItem };
+  return { droppables, startDragging, moveItem, draggable };
 };

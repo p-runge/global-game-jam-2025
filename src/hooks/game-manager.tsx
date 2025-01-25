@@ -6,7 +6,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { initMonster, type Card } from "~/types/models";
+import { initMonster, type Monster, type Card } from "~/types/models";
 import { api } from "~/utils/api";
 
 type CardLocation =
@@ -24,6 +24,10 @@ type CardLocationMap = Record<CardLocation, Card[]>;
 type GameManager = {
   cardLocations: CardLocationMap;
   moveCard: (cardId: string, to: CardLocation) => void;
+  updateMonster: (
+    cardId: string,
+    card: Pick<Monster, "currentSize" | "currentStability">,
+  ) => void;
 };
 const GameManagerContext = createContext<GameManager | undefined>(undefined);
 
@@ -103,11 +107,43 @@ export function GameManagerProvider({
     [allCards],
   );
 
+  // update currentSize and currentStability when card is updated
+  function updateMonster(
+    cardId: string,
+    monsterUpdates: Pick<Monster, "currentSize" | "currentStability">,
+  ) {
+    const isMonsterDefeated = monsterUpdates.currentStability <= 0;
+
+    setCardLocations((prevLocations) => {
+      const newLocations = { ...prevLocations };
+      (Object.entries(newLocations) as [CardLocation, Card[]][]).forEach(
+        ([location, cards]) => {
+          newLocations[location] = cards
+            .map((card) =>
+              card.id === cardId
+                ? isMonsterDefeated
+                  ? undefined
+                  : {
+                      ...card,
+                      currentSize: monsterUpdates.currentSize,
+                      currentStability: monsterUpdates.currentStability,
+                    }
+                : card,
+            )
+            .filter(Boolean);
+        },
+      );
+
+      return newLocations;
+    });
+  }
+
   return (
     <GameManagerContext.Provider
       value={{
         cardLocations,
         moveCard,
+        updateMonster,
       }}
     >
       {children}

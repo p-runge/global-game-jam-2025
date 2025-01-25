@@ -13,7 +13,7 @@ import { useDraggingManager, type DroppableId } from "~/hooks/dragging-manager";
 
 export default function Home() {
   const { cardLocations } = useGameManager();
-  const { startDragging, moveItem } = useDraggingManager();
+  const { startDragging, moveItem, draggable } = useDraggingManager();
 
   function handleDragStart(event: DragStartEvent) {
     const { active } = event;
@@ -81,9 +81,15 @@ export default function Home() {
               <div className="flex h-card w-[900px] bg-red-400">
                 {cardLocations["opponent-board"].map((card) => (
                   <div key={card.id}>
-                    <Droppable id={`opponent-card-${parseInt(card.id)}`}>
+                    {draggable?.droppableIds.find(
+                      (id) => id === `opponent-card-${card.id}`,
+                    ) ? (
+                      <Droppable id={`opponent-card-${card.id}`}>
+                        <Card card={card}></Card>
+                      </Droppable>
+                    ) : (
                       <Card card={card}></Card>
-                    </Droppable>
+                    )}
                   </div>
                 ))}
               </div>
@@ -115,7 +121,17 @@ export default function Home() {
                 <div className="flex h-card w-[900px] bg-red-400">
                   {cardLocations["player-board"].map((card) => (
                     <div key={card.id}>
-                      <Draggable id={card.id} droppableIds={["player-board"]}>
+                      <Draggable
+                        id={card.id}
+                        droppableIds={cardLocations["opponent-board"]
+                          .filter(
+                            (c) =>
+                              card.type === "monster" &&
+                              c.type === "monster" &&
+                              c.currentSize < card.currentSize,
+                          )
+                          .map((c) => `opponent-card-${c.id}` as DroppableId)}
+                      >
                         <Card card={card}></Card>
                       </Draggable>
                     </div>
