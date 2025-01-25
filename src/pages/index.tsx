@@ -118,7 +118,10 @@ export default function Home() {
                   <div
                     key={card.id}
                     onClick={() => {
-                      moveCard(card.id, "player-hand");
+                      console.log("clicked", cardLocations["player-deck"]);
+                      if (cardLocations["player-hand"].length < 5) {
+                        moveCard(card.id, "player-hand");
+                      }
                     }}
                   >
                     <Card card={card}></Card>
@@ -189,7 +192,14 @@ export default function Home() {
                   key={card.id}
                   className="pointer-events-auto -mx-[45px] origin-bottom scale-50 transition-transform hover:z-10 hover:scale-100"
                 >
-                  <Draggable id={card.id} droppableIds={["player-board"]}>
+                  <Draggable
+                    id={card.id}
+                    droppableIds={
+                      cardLocations["player-board"].length < 5
+                        ? ["player-board"]
+                        : []
+                    }
+                  >
                     <Card card={card}></Card>
                   </Draggable>
                 </div>

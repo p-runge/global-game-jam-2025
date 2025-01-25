@@ -63,27 +63,27 @@ export function GameManagerProvider({
         stability: card.stability,
       }),
     );
-    function shuffleArray<T>(array: T[]): T[] {
-      const shuffled = [...array]; // Create a copy to avoid mutating the original array
-      for (let i = shuffled.length - 1; i > 0; i--) {
-        const randomIndex = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[randomIndex]] = [
-          shuffled[randomIndex],
-          shuffled[i],
-        ]; // Swap elements
-      }
-      return shuffled;
-    }
 
-    setCardLocations((prevLocations) => ({
-      // TODO: correctly set initial data
-      ...prevLocations,
-      "player-deck": shuffleArray(allCards),
-      "opponent-deck": shuffleArray(allCards),
-      "player-hand": allCards.filter((_, i) => i % 3 === 0),
-      "player-board": allCards.filter((_, i) => i % 3 === 1),
-      "opponent-board": allCards.filter((_, i) => i % 3 === 2),
-    }));
+    setCardLocations({
+      "player-deck": allCards
+        .sort(() => Math.random() - 0.5)
+        .map((card) => ({
+          ...card,
+          id: Math.random().toString(36).substring(7),
+        })),
+      "opponent-deck": allCards
+        .sort(() => Math.random() - 0.5)
+        .map((card) => ({
+          ...card,
+          id: Math.random().toString(36).substring(7),
+        })),
+      "player-hand": [],
+      "player-board": [],
+      "player-discard-pile": [],
+      "opponent-hand": [],
+      "opponent-board": [],
+      "opponent-discard-pile": [],
+    });
   }, [data]);
 
   const allCards = useMemo(() => {

@@ -23,6 +23,7 @@ export const useDraggingManager = () => {
       console.log("move draggable", cardId, "from", from, "to", to);
       if (to === "player-board") {
         moveCard(cardId, "player-board");
+        console.log("length", cardLocations["player-board"].length);
       } else if (to.startsWith("opponent-card-")) {
         // trigger attack
         const defenderCardId = to.replace("opponent-card-", "");
