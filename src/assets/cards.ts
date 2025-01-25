@@ -43,4 +43,18 @@ export const CARDS: TCard[] = [
     size: 6,
     stability: 6,
   },
+  {
+    id: "7",
+    name: "Bella",
+    cost: 7,
+    size: 7,
+    stability: 7,
+  },
+  {
+    id: "8",
+    name: "Benny",
+    cost: 8,
+    size: 8,
+    stability: 8,
+  },
 ];

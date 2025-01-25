@@ -1,6 +1,6 @@
 import { useDroppable } from "@dnd-kit/core";
 import React from "react";
-import type { DroppableId } from "~/hooks/droppable-manager";
+import type { DroppableId } from "~/hooks/dragging-manager";
 import { cn } from "~/utils/cn";
 
 type Props = {

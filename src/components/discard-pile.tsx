@@ -2,13 +2,10 @@ import React from "react";
 import type { TDiscardPile } from "~/types/TDiscardPile";
 
 export default function DiscardPile({
-  discardPile,
+  children,
 }: {
   discardPile: TDiscardPile;
+  children: React.ReactNode;
 }) {
-  return (
-    <div className="h-card w-card bg-black text-white">
-      Discard Pile {discardPile.name}
-    </div>
-  );
+  return <div className="h-card w-card bg-black text-white">{children}</div>;
 }

@@ -1,26 +1,21 @@
 import { useDraggable } from "@dnd-kit/core";
 import React from "react";
-import type { DroppableId } from "~/hooks/droppable-manager";
+import type { DroppableId } from "~/hooks/dragging-manager";
 import { cn } from "~/utils/cn";
 
-type Props = {
+export type TDraggable = {
   id: string;
-  droppableId: DroppableId;
-  isDraggable: boolean;
+  droppableIds: DroppableId[];
+};
+type Props = TDraggable & {
   children: React.ReactNode;
 };
-export default function Draggable({
-  id,
-  droppableId,
-  isDraggable,
-  children,
-}: Props) {
+export default function Draggable({ id, droppableIds, children }: Props) {
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
       id,
       data: {
-        droppableId,
-        isDraggable,
+        droppableIds,
       },
     });
 
@@ -34,15 +29,13 @@ export default function Draggable({
             }
           : undefined
       }
-      {...(isDraggable ? listeners : {})} // Only add listeners if draggable
+      {...listeners} // Only add listeners if draggable
       {...attributes}
       className={cn(
         "border-2",
         isDragging
           ? "cursor-grabbing border-amber-500"
-          : isDraggable
-            ? "cursor-grab hover:border-green-500"
-            : "cursor-not-allowed border-black",
+          : "cursor-grab hover:border-green-500",
       )}
     >
       {children}

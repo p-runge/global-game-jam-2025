@@ -12,7 +12,7 @@ export type TCard = {
 };
 export function Card({ card }: { card: TCard }) {
   return (
-    <div className="h-card w-card relative flex flex-col justify-between rounded-lg border-4 border-black bg-gray-800 bg-[url('/bubble.webp')] bg-cover text-white shadow-sm hover:bg-gray-700">
+    <div className="relative flex h-card w-card flex-col justify-between rounded-lg border-4 border-black bg-gray-800 bg-[url('/bubble.webp')] bg-cover text-white shadow-sm hover:bg-gray-700">
       <div className="mb-2 text-xl font-bold tracking-tight">{card.name}</div>
 
       <div className="flex items-center justify-center">
