@@ -63,9 +63,11 @@ export function CardLocationManagerProvider({
     );
 
     setCardLocations((prevLocations) => ({
+      // TODO: correctly set initial data
       ...prevLocations,
-      "player-hand": allCards.filter((_, i) => i % 2 === 0),
-      "opponent-hand": allCards.filter((_, i) => i % 2 === 1),
+      "player-hand": allCards.filter((_, i) => i % 3 === 0),
+      "player-board": allCards.filter((_, i) => i % 3 === 1),
+      "opponent-board": allCards.filter((_, i) => i % 3 === 2),
     }));
   }, [data]);
 
