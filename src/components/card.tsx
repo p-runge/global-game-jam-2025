@@ -1,14 +1,26 @@
 import type { Card, Monster } from "~/types/models";
 
-export function Card({ card }: { card: Card }) {
+export function Card({ card, hidden }: { card: Card; hidden: boolean }) {
+  if (hidden) {
+    return <BackSideCard />;
+  }
   if (card.type === "monster") {
     return <MonsterCard card={card} />;
   }
 }
 
+function BackSideCard() {
+  return (
+    <div className="relative flex h-card w-card flex-col justify-between rounded-lg border-4 border-black bg-gray-800 bg-[url('/bubble.webp')] bg-cover bg-center text-white shadow-sm hover:bg-gray-700"></div>
+  );
+}
+
 function MonsterCard({ card }: { card: Monster }) {
   return (
-    <div className="relative flex h-card w-card flex-col justify-between rounded-lg border-4 border-black bg-gray-800 bg-[url('/bubble.webp')] bg-cover text-white shadow-sm hover:bg-gray-700">
+    <div
+      style={{ backgroundImage: `url(/${card.image})` }}
+      className={`relative flex h-card w-card flex-col justify-between rounded-lg border-4 border-black bg-gray-800 bg-cover bg-center text-white shadow-sm hover:bg-gray-700`}
+    >
       <div className="mb-2 text-xl font-bold tracking-tight">{card.name}</div>
 
       <div className="flex items-center justify-center">

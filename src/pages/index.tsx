@@ -80,7 +80,7 @@ export default function Home() {
               <div className="h-card w-card bg-black text-white">
                 {cardLocations["opponent-discard-pile"].map((card) => (
                   <div key={card.id}>
-                    <Card card={card}></Card>
+                    <Card card={card} hidden={false}></Card>
                   </div>
                 ))}
               </div>
@@ -94,10 +94,10 @@ export default function Home() {
                       (id) => id === `opponent-card-${card.id}`,
                     ) ? (
                       <Droppable id={`opponent-card-${card.id}`}>
-                        <Card card={card}></Card>
+                        <Card card={card} hidden={false}></Card>
                       </Droppable>
                     ) : (
-                      <Card card={card}></Card>
+                      <Card card={card} hidden={false}></Card>
                     )}
                   </div>
                 ))}
@@ -108,7 +108,7 @@ export default function Home() {
               <div className="h-card w-card bg-green-400">
                 {cardLocations["opponent-deck"].map((card) => (
                   <div className="absolute" key={card.id}>
-                    <Card card={card}></Card>
+                    <Card card={card} hidden></Card>
                   </div>
                 ))}
               </div>
@@ -128,7 +128,7 @@ export default function Home() {
                       }
                     }}
                   >
-                    <Card card={card}></Card>
+                    <Card card={card} hidden></Card>
                   </div>
                 ))}
               </div>
@@ -151,7 +151,7 @@ export default function Home() {
                             )
                             .map((c) => `opponent-card-${c.id}` as DroppableId)}
                         >
-                          <Card card={card}></Card>
+                          <Card card={card} hidden={false}></Card>
                         </Draggable>
                       </div>
                     ))}
@@ -169,7 +169,7 @@ export default function Home() {
               <div className="h-card w-card bg-black text-white">
                 {cardLocations["player-discard-pile"].map((card) => (
                   <div key={card.id}>
-                    <Card card={card}></Card>
+                    <Card card={card} hidden={false}></Card>
                   </div>
                 ))}
               </div>
@@ -184,7 +184,7 @@ export default function Home() {
                   key={card.id}
                   className="pointer-events-auto origin-top scale-50"
                 >
-                  <Card card={card}></Card>
+                  <Card card={card} hidden={false}></Card>
                 </div>
               ))}
             </div>
@@ -204,7 +204,7 @@ export default function Home() {
                         : []
                     }
                   >
-                    <Card card={card}></Card>
+                    <Card card={card} hidden={false}></Card>
                   </Draggable>
                 </div>
               ))}
