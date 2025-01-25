@@ -22,6 +22,8 @@ type CardLocation =
 type CardLocationMap = Record<CardLocation, Card[]>;
 
 type GameManager = {
+  turn: "player" | "opponent";
+  turnCount: number;
   cardLocations: CardLocationMap;
   moveCard: (cardId: string, to: CardLocation) => void;
   updateMonster: (
@@ -89,6 +91,17 @@ export function GameManagerProvider({
     return Object.values(cardLocations).flat();
   }, [cardLocations]);
 
+  const { data: turnData } = api.game.getTurn.useQuery();
+
+  const [turn, setTurn] = useState<"player" | "opponent">("player");
+  const [turnCount, setTurnCount] = useState(0);
+  useEffect(() => {
+    if (!turnData) return;
+
+    setTurn(turnData.turn);
+    setTurnCount(turnData.turnCount);
+  }, [turnData]);
+
   const moveCard = useCallback(
     (cardId: string, to: CardLocation) => {
       // prevent moving card to the same location
@@ -143,8 +156,11 @@ export function GameManagerProvider({
             card.id === cardId
               ? {
                   ...card,
-                  currentSize: monsterUpdates.currentSize,
-                  currentStability: monsterUpdates.currentStability,
+                  currentSize: Math.max(monsterUpdates.currentSize, 0),
+                  currentStability: Math.max(
+                    monsterUpdates.currentStability,
+                    0,
+                  ),
                 }
               : card,
           );
@@ -158,6 +174,8 @@ export function GameManagerProvider({
   return (
     <GameManagerContext.Provider
       value={{
+        turn,
+        turnCount,
         cardLocations,
         moveCard,
         updateMonster,

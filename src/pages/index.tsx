@@ -12,7 +12,7 @@ import { useGameManager } from "~/hooks/game-manager";
 import { useDraggingManager, type DroppableId } from "~/hooks/dragging-manager";
 
 export default function Home() {
-  const { cardLocations, moveCard } = useGameManager();
+  const { turn, turnCount, cardLocations, moveCard } = useGameManager();
   const { startDragging, moveItem, draggable } = useDraggingManager();
 
   function handleDragStart(event: DragStartEvent) {
@@ -65,6 +65,14 @@ export default function Home() {
       </Head>
       <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <div className="relative h-full bg-blue-500">
+          {/* turn info */}
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-center">
+            <div className="text-3xl font-bold">Turn Count: {turnCount}</div>
+            <div className="text-3xl font-bold">
+              {turn === "player" ? "Your Turn" : "Opponent's Turn"}
+            </div>
+          </div>
+
           {/* game board anchor */}
           <div className="absolute left-1/2 top-1/2">
             {/* opponent */}
@@ -170,7 +178,7 @@ export default function Home() {
 
           {/* hands */}
           <div className="absolute left-1/2 top-0 -translate-x-1/2">
-            <div className="pointer-events-none grid grid-cols-7 grid-rows-1">
+            <div className="pointer-events-none flex">
               {cardLocations["opponent-hand"].map((card) => (
                 <div
                   key={card.id}
@@ -182,7 +190,7 @@ export default function Home() {
             </div>
           </div>
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2">
-            <div className="pointer-events-none grid grid-cols-7 grid-rows-1">
+            <div className="pointer-events-none flex">
               {cardLocations["player-hand"].map((card) => (
                 <div
                   key={card.id}
