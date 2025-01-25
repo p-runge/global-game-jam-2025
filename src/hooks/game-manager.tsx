@@ -31,6 +31,15 @@ type GameManager = {
 };
 const GameManagerContext = createContext<GameManager | undefined>(undefined);
 
+function getUniqueDeckFromCards(cards: Card[]) {
+  return cards
+    .sort(() => Math.random() - 0.5)
+    .map((card) => ({
+      ...card,
+      id: Math.random().toString(36).substring(7),
+    }));
+}
+
 export function GameManagerProvider({
   children,
 }: {
@@ -65,18 +74,8 @@ export function GameManagerProvider({
     );
 
     setCardLocations({
-      "player-deck": allCards
-        .sort(() => Math.random() - 0.5)
-        .map((card) => ({
-          ...card,
-          id: Math.random().toString(36).substring(7),
-        })),
-      "opponent-deck": allCards
-        .sort(() => Math.random() - 0.5)
-        .map((card) => ({
-          ...card,
-          id: Math.random().toString(36).substring(7),
-        })),
+      "player-deck": getUniqueDeckFromCards(allCards),
+      "opponent-deck": getUniqueDeckFromCards(allCards),
       "player-hand": [],
       "player-board": [],
       "player-discard-pile": [],
