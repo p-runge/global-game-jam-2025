@@ -24,7 +24,7 @@ export function Frame({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="flex h-screen w-screen items-center justify-center bg-black">
+    <div className="flex h-screen w-screen items-center justify-center overflow-hidden bg-black">
       <div
         ref={ref}
         className="aspect-[16/9] h-[1080px] w-[1920px] bg-gray-200"
