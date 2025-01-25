@@ -1,16 +1,12 @@
-import React from "react";
-import Image from "next/image";
+import type { Card, Monster } from "~/types/models";
 
-// type CardType = "monster" | "spell" | "trap";
-export type TCard = {
-  id: string;
-  name: string;
-  // type: CardType;
-  cost: number;
-  size: number;
-  stability: number;
-};
-export function Card({ card }: { card: TCard }) {
+export function Card({ card }: { card: Card }) {
+  if (card.type === "monster") {
+    return <MonsterCard card={card} />;
+  }
+}
+
+function MonsterCard({ card }: { card: Monster }) {
   return (
     <div className="relative flex h-card w-card flex-col justify-between rounded-lg border-4 border-black bg-gray-800 bg-[url('/bubble.webp')] bg-cover text-white shadow-sm hover:bg-gray-700">
       <div className="mb-2 text-xl font-bold tracking-tight">{card.name}</div>

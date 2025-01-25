@@ -4,25 +4,12 @@ import {
   type DragStartEvent,
 } from "@dnd-kit/core";
 import Head from "next/head";
-import { Board } from "~/components/board";
 import { Card } from "~/components/card";
-import { Deck } from "~/components/deck";
-import DiscardPile from "~/components/discard-pile";
 import Draggable from "~/components/draggable";
 import Droppable from "~/components/droppable";
 import { Frame } from "~/components/frame";
 import { useCardLocationManager } from "~/hooks/card-location-manager";
 import { useDraggingManager, type DroppableId } from "~/hooks/dragging-manager";
-import type { TBoard } from "~/types/TBoard";
-
-const opponentBoard: TBoard = {
-  name: "opponent",
-  isOpponent: true,
-};
-const playerBoard: TBoard = {
-  name: "player",
-  isOpponent: false,
-};
 
 export default function Home() {
   const { cardLocations } = useCardLocationManager();
@@ -84,22 +71,17 @@ export default function Home() {
 
             {/* opponent */}
             <div className="absolute -top-[305px] left-[550px] -translate-x-1/2">
-              <DiscardPile
-                discardPile={{
-                  name: "opponent",
-                  isOpponent: true,
-                }}
-              >
+              <div className="h-card w-card bg-black text-white">
                 {cardLocations["opponent-discard-pile"].map((card) => (
                   <div key={card.id}>
                     <Card card={card}></Card>
                   </div>
                 ))}
-              </DiscardPile>
+              </div>
             </div>
 
             <div className="absolute -top-[305px] -translate-x-1/2">
-              <Board board={opponentBoard}>
+              <div className="flex h-card w-[900px] bg-red-400">
                 {cardLocations["opponent-board"].map((card) => (
                   <div key={card.id}>
                     <Droppable id={`opponent-card-${parseInt(card.id)}`}>
@@ -107,33 +89,33 @@ export default function Home() {
                     </Droppable>
                   </div>
                 ))}
-              </Board>
+              </div>
             </div>
 
             <div className="absolute -left-[550px] -top-[305px] -translate-x-1/2">
-              <Deck deck={{ name: "opponent", isOpponent: true }}>
+              <div className="h-card w-card bg-green-400">
                 {cardLocations["opponent-deck"].map((card) => (
                   <div key={card.id}>
                     <Card card={card}></Card>
                   </div>
                 ))}
-              </Deck>
+              </div>
             </div>
 
             {/* player */}
             <div className="absolute -bottom-[305px] left-[550px] -translate-x-1/2">
-              <Deck deck={{ name: "player", isOpponent: false }}>
+              <div className="h-card w-card bg-green-400">
                 {cardLocations["player-deck"].map((card) => (
                   <div key={card.id}>
                     <Card card={card}></Card>
                   </div>
                 ))}
-              </Deck>
+              </div>
             </div>
 
             <div className="absolute -bottom-[305px] -translate-x-1/2">
               <Droppable id="player-board">
-                <Board board={playerBoard}>
+                <div className="flex h-card w-[900px] bg-red-400">
                   {cardLocations["player-board"].map((card) => (
                     <div key={card.id}>
                       <Draggable id={card.id} droppableIds={["player-board"]}>
@@ -141,23 +123,18 @@ export default function Home() {
                       </Draggable>
                     </div>
                   ))}
-                </Board>
+                </div>
               </Droppable>
             </div>
 
             <div className="absolute -bottom-[305px] right-[550px] translate-x-1/2">
-              <DiscardPile
-                discardPile={{
-                  name: "player",
-                  isOpponent: false,
-                }}
-              >
+              <div className="h-card w-card bg-black text-white">
                 {cardLocations["player-discard-pile"].map((card) => (
                   <div key={card.id}>
                     <Card card={card}></Card>
                   </div>
                 ))}
-              </DiscardPile>
+              </div>
             </div>
           </div>
 

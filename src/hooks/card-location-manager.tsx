@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useState } from "react";
 import { CARDS } from "~/assets/cards";
-import type { TCard } from "~/components/card";
+import type { Card } from "~/types/models";
 
 type CardLocation =
   | "player-deck"
@@ -12,19 +12,10 @@ type CardLocation =
   | "opponent-board"
   | "opponent-discard-pile";
 
-const initialLocations: Record<CardLocation, TCard[]> = {
-  "player-deck": CARDS.filter((_, i) => i % 8 === 0),
-  "player-hand": CARDS.filter((_, i) => i % 8 === 1),
-  "player-board": CARDS.filter((_, i) => i % 8 === 2),
-  "player-discard-pile": CARDS.filter((_, i) => i % 8 === 3),
-  "opponent-deck": CARDS.filter((_, i) => i % 8 === 4),
-  "opponent-hand": CARDS.filter((_, i) => i % 8 === 5),
-  "opponent-board": CARDS.filter((_, i) => i % 8 === 6),
-  "opponent-discard-pile": CARDS.filter((_, i) => i % 8 === 7),
-};
+type CardLocationMap = Record<CardLocation, Card[]>;
 
 type CardLocationManager = {
-  cardLocations: Record<CardLocation, TCard[]>;
+  cardLocations: CardLocationMap;
   moveCard: (cardId: string, to: CardLocation) => void;
 };
 const CardLocationManagerContext = createContext<
@@ -36,8 +27,17 @@ export function CardLocationManagerProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [cardLocations, setCardLocations] =
-    useState<Record<CardLocation, TCard[]>>(initialLocations);
+  const [allCards] = useState<Card[]>(CARDS);
+  const [cardLocations, setCardLocations] = useState<CardLocationMap>({
+    "player-deck": allCards.filter((_, i) => i % 8 === 0),
+    "player-hand": allCards.filter((_, i) => i % 8 === 1),
+    "player-board": allCards.filter((_, i) => i % 8 === 2),
+    "player-discard-pile": allCards.filter((_, i) => i % 8 === 3),
+    "opponent-deck": allCards.filter((_, i) => i % 8 === 4),
+    "opponent-hand": allCards.filter((_, i) => i % 8 === 5),
+    "opponent-board": allCards.filter((_, i) => i % 8 === 6),
+    "opponent-discard-pile": allCards.filter((_, i) => i % 8 === 7),
+  });
 
   const moveCard = useCallback((cardId: string, to: CardLocation) => {
     // prevent moving card to the same location
@@ -48,13 +48,11 @@ export function CardLocationManagerProvider({
 
     // update card locations
     setCardLocations((prevLocations) => {
-      if (!movingCard) return prevLocations;
-
       const newLocations = { ...prevLocations };
-      (Object.entries(newLocations) as [CardLocation, TCard[]][]).forEach(
+      (Object.entries(newLocations) as [CardLocation, Card[]][]).forEach(
         ([location, cards]) => {
           // remove card from all locations
-          newLocations[location] = cards.filter((c) => c.id !== cardId);
+          newLocations[location] = cards.filter((card) => card.id !== cardId);
 
           // add card to new location
           if (location === to) {

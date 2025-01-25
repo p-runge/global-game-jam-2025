@@ -1,10 +1,8 @@
 import { useCallback, useState } from "react";
-import type { TCard } from "~/components/card";
 import type { TDraggable } from "~/components/draggable";
 import { useCardLocationManager } from "./card-location-manager";
 
 export type DroppableId = "player-board" | `opponent-card-${number}`;
-export type DraggableDroppableMap = Record<DroppableId, TCard[]>;
 
 export const useDraggingManager = () => {
   const [draggable, setDraggableId] = useState<TDraggable | null>(null);
