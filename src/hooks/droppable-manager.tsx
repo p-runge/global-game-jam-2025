@@ -1,11 +1,8 @@
 import { useCallback, useState } from "react";
+import { type TCard } from "~/types/TCard";
 
-interface Item {
-  id: string;
-}
-
-export type DroppableId = "A" | "B" | "C";
-export type DraggableDroppableMap = Record<DroppableId, Item[]>;
+export type DroppableId = "player-hand" | "player-board";
+export type DraggableDroppableMap = Record<DroppableId, TCard[]>;
 
 export const useDroppableManager = (initialState: DraggableDroppableMap) => {
   const [droppables, setDroppables] =
