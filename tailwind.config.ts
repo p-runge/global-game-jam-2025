@@ -8,6 +8,12 @@ export default {
       fontFamily: {
         sans: ["var(--font-geist-sans)", ...fontFamily.sans],
       },
+      width: {
+        card: "180px",
+      },
+      height: {
+        card: "300px",
+      },
     },
     screens: {},
   },

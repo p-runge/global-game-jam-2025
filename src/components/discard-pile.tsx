@@ -7,7 +7,7 @@ export default function DiscardPile({
   discardPile: TDiscardPile;
 }) {
   return (
-    <div className="h-[300px] w-[180px] bg-black text-white">
+    <div className="h-card w-card bg-black text-white">
       Discard Pile {discardPile.name}
     </div>
   );
