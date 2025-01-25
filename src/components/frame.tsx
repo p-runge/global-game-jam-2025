@@ -11,8 +11,6 @@ export function Frame({ children }: { children: React.ReactNode }) {
     const resize = () => {
       if (!ref.current) return;
 
-      console.log(window.innerWidth, window.innerHeight);
-
       const scale = Math.min(
         (1 / CANVAS_WIDTH) * window.innerWidth,
         (1 / CANVAS_HEIGHT) * window.innerHeight,

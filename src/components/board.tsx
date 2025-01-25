@@ -3,7 +3,7 @@ import type { TBoard } from "~/types/TBoard";
 
 export function Board({ board }: { board: TBoard }) {
   return (
-    <div className="col-start-2 h-80 border-2 text-white">
+    <div className="h-[300px] w-[900px] bg-red-400">
       <h1>{board.name}</h1>
     </div>
   );
