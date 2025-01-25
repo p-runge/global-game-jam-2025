@@ -99,7 +99,7 @@ export default function Home() {
             <div className="absolute -left-[570px] -top-[305px] -translate-x-1/2">
               <div className="h-card w-card bg-green-400">
                 {cardLocations["opponent-deck"].map((card) => (
-                  <div key={card.id}>
+                  <div className="absolute" key={card.id}>
                     <Card card={card}></Card>
                   </div>
                 ))}
@@ -111,6 +111,7 @@ export default function Home() {
               <div className="h-card w-card bg-green-400">
                 {cardLocations["player-deck"].map((card) => (
                   <div
+                    className="absolute"
                     key={card.id}
                     onClick={() => {
                       console.log("clicked", cardLocations["player-deck"]);
