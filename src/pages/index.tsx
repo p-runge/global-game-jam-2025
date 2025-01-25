@@ -111,10 +111,10 @@ export default function Home() {
               <div className="h-card w-card bg-green-400">
                 {cardLocations["player-deck"].map((card) => (
                   <div
-                    className="absolute"
+                    className="absolute cursor-pointer"
                     key={card.id}
                     onClick={() => {
-                      console.log("clicked", cardLocations["player-deck"]);
+                      console.log("draw card from player deck");
                       if (cardLocations["player-hand"].length < 5) {
                         moveCard(card.id, "player-hand");
                       }
