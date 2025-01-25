@@ -38,6 +38,7 @@ export default function Home() {
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+    startDragging(null);
 
     if (!over?.id) return;
 
@@ -67,7 +68,7 @@ export default function Home() {
           {/* game board anchor */}
           <div className="absolute left-1/2 top-1/2">
             {/* opponent */}
-            <div className="absolute -top-[305px] left-[550px] -translate-x-1/2">
+            <div className="absolute -top-[305px] left-[570px] -translate-x-1/2">
               <div className="h-card w-card bg-black text-white">
                 {cardLocations["opponent-discard-pile"].map((card) => (
                   <div key={card.id}>
@@ -78,7 +79,7 @@ export default function Home() {
             </div>
 
             <div className="absolute -top-[305px] -translate-x-1/2">
-              <div className="flex h-card w-[900px] bg-red-400">
+              <div className="flex h-card w-[940px] gap-[10px] bg-red-400">
                 {cardLocations["opponent-board"].map((card) => (
                   <div key={card.id}>
                     {draggable?.droppableIds.find(
@@ -95,7 +96,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="absolute -left-[550px] -top-[305px] -translate-x-1/2">
+            <div className="absolute -left-[570px] -top-[305px] -translate-x-1/2">
               <div className="h-card w-card bg-green-400">
                 {cardLocations["opponent-deck"].map((card) => (
                   <div key={card.id}>
@@ -106,7 +107,7 @@ export default function Home() {
             </div>
 
             {/* player */}
-            <div className="absolute -bottom-[305px] left-[550px] -translate-x-1/2">
+            <div className="absolute -bottom-[305px] left-[570px] -translate-x-1/2">
               <div className="h-card w-card bg-green-400">
                 {cardLocations["player-deck"].map((card) => (
                   <div key={card.id}>
@@ -117,30 +118,37 @@ export default function Home() {
             </div>
 
             <div className="absolute -bottom-[305px] -translate-x-1/2">
-              <Droppable id="player-board">
-                <div className="flex h-card w-[900px] bg-red-400">
-                  {cardLocations["player-board"].map((card) => (
-                    <div key={card.id}>
-                      <Draggable
-                        id={card.id}
-                        droppableIds={cardLocations["opponent-board"]
-                          .filter(
-                            (c) =>
-                              card.type === "monster" &&
-                              c.type === "monster" &&
-                              c.currentSize < card.currentSize,
-                          )
-                          .map((c) => `opponent-card-${c.id}` as DroppableId)}
-                      >
-                        <Card card={card}></Card>
-                      </Draggable>
-                    </div>
-                  ))}
-                </div>
-              </Droppable>
+              {(() => {
+                const content = (
+                  <div className="flex h-card w-[940px] gap-[10px] bg-red-400">
+                    {cardLocations["player-board"].map((card) => (
+                      <div key={card.id}>
+                        <Draggable
+                          id={card.id}
+                          droppableIds={cardLocations["opponent-board"]
+                            .filter(
+                              (c) =>
+                                card.type === "monster" &&
+                                c.type === "monster" &&
+                                c.currentSize < card.currentSize,
+                            )
+                            .map((c) => `opponent-card-${c.id}` as DroppableId)}
+                        >
+                          <Card card={card}></Card>
+                        </Draggable>
+                      </div>
+                    ))}
+                  </div>
+                );
+                return draggable?.droppableIds.includes("player-board") ? (
+                  <Droppable id="player-board">{content}</Droppable>
+                ) : (
+                  <>{content}</>
+                );
+              })()}
             </div>
 
-            <div className="absolute -bottom-[305px] right-[550px] translate-x-1/2">
+            <div className="absolute -bottom-[305px] right-[570px] translate-x-1/2">
               <div className="h-card w-card bg-black text-white">
                 {cardLocations["player-discard-pile"].map((card) => (
                   <div key={card.id}>

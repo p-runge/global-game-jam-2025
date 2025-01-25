@@ -8,14 +8,14 @@ type Props = {
   children: React.ReactNode;
 };
 export default function Droppable({ id, children }: Props) {
-  const { isOver, setNodeRef } = useDroppable({
+  const { isOver, setNodeRef, active } = useDroppable({
     id,
   });
 
   return (
     <div
       ref={setNodeRef}
-      className={cn("border-4", isOver ? "bg-green-500" : "border-black")}
+      className={cn(isOver ? "glow-green" : active && "glow-white")}
     >
       {children}
     </div>

@@ -32,10 +32,7 @@ export default function Draggable({ id, droppableIds, children }: Props) {
       {...listeners} // Only add listeners if draggable
       {...attributes}
       className={cn(
-        "border-2",
-        isDragging
-          ? "cursor-grabbing border-amber-500"
-          : "cursor-grab hover:border-green-500",
+        isDragging ? "cursor-grabbing" : "hover:glow-green cursor-grab",
       )}
     >
       {children}

@@ -50,7 +50,7 @@ export const useDraggingManager = () => {
     [cardLocations, moveCard, updateMonster],
   );
 
-  const startDragging = useCallback((draggable: TDraggable) => {
+  const startDragging = useCallback((draggable: TDraggable | null) => {
     setDraggableId(draggable);
   }, []);
 
