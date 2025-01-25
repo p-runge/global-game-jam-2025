@@ -12,8 +12,13 @@ import { useGameManager } from "~/hooks/game-manager";
 import { useDraggingManager, type DroppableId } from "~/hooks/dragging-manager";
 
 export default function Home() {
+<<<<<<< HEAD
   const { cardLocations } = useGameManager();
   const { startDragging, moveItem, draggable } = useDraggingManager();
+=======
+  const { cardLocations, moveCard } = useGameManager();
+  const { startDragging, moveItem } = useDraggingManager();
+>>>>>>> d90fb7a (ffs)
 
   function handleDragStart(event: DragStartEvent) {
     const { active } = event;
@@ -110,7 +115,12 @@ export default function Home() {
             <div className="absolute -bottom-[305px] left-[570px] -translate-x-1/2">
               <div className="h-card w-card bg-green-400">
                 {cardLocations["player-deck"].map((card) => (
-                  <div key={card.id}>
+                  <div
+                    key={card.id}
+                    onClick={() => {
+                      moveCard(card.id, "player-hand");
+                    }}
+                  >
                     <Card card={card}></Card>
                   </div>
                 ))}
