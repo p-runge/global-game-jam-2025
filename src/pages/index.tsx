@@ -1,7 +1,8 @@
 import { DndContext, type DragEndEvent } from "@dnd-kit/core";
 import Head from "next/head";
+import { CARDS } from "~/assets/cards";
 import { Board } from "~/components/board";
-import { Card } from "~/components/card";
+import { Card, TCard } from "~/components/card";
 import { Deck } from "~/components/deck";
 import DiscardPile from "~/components/discard-pile";
 import Draggable from "~/components/draggable";
@@ -12,55 +13,10 @@ import {
   useDroppableManager,
 } from "~/hooks/droppable-manager";
 import type { TBoard } from "~/types/TBoard";
-import type { TCard } from "~/types/TCard";
-import { Location } from "~/types/TCard";
 
 const initialData: Record<DroppableId, TCard[]> = {
-  "player-hand": [
-    {
-      id: "1",
-      location: Location.Hand,
-      name: "BubbleCard1",
-      opponentsHand: false,
-    },
-    {
-      id: "2",
-      location: Location.Hand,
-      name: "BubbleCard2",
-      opponentsHand: false,
-    },
-    {
-      id: "3",
-      location: Location.Hand,
-      name: "BubbleCard3",
-      opponentsHand: false,
-    },
-    {
-      id: "4",
-      location: Location.Hand,
-      name: "BubbleCard4",
-      opponentsHand: false,
-    },
-    {
-      id: "5",
-      location: Location.Hand,
-      name: "BubbleCard5",
-      opponentsHand: false,
-    },
-    {
-      id: "6",
-      location: Location.Hand,
-      name: "BubbleCard6",
-      opponentsHand: false,
-    },
-    {
-      id: "7",
-      location: Location.Hand,
-      name: "BubbleCard7",
-      opponentsHand: false,
-    },
-  ],
-  "player-board": [],
+  "player-hand": CARDS.filter((_, i) => i % 2 === 0),
+  "player-board": CARDS.filter((_, i) => i % 2 === 1),
 };
 
 const opponentsHandCards: TCard[] = [];

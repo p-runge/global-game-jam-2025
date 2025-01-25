@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { type TCard } from "~/types/TCard";
+import type { TCard } from "~/components/card";
 
 export type DroppableId = "player-hand" | "player-board";
 export type DraggableDroppableMap = Record<DroppableId, TCard[]>;
