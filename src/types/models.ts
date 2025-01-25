@@ -5,13 +5,14 @@ import { z } from "zod";
 const CardBaseSchema = z.object({
   id: z.string(),
   name: z.string(),
+  image: z.string(),
 });
 
 /**
  * Monsters
  */
 // the core data that is also stored in the db
-const MonsterCoreSchema = CardBaseSchema.extend({
+export const MonsterCoreSchema = CardBaseSchema.extend({
   type: z.literal("monster"),
   cost: z.number(),
   size: z.number(),
@@ -39,7 +40,7 @@ export function initMonster(monster: MonsterCore) {
 /**
  * Spells
  */
-const SpellSchema = CardBaseSchema.extend({
+export const SpellSchema = CardBaseSchema.extend({
   type: z.literal("spell"),
   effect: z.string(),
 });

@@ -1,6 +1,13 @@
-import { createContext, useCallback, useContext, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { CARDS } from "~/assets/cards";
-import type { Card } from "~/types/models";
+import { initMonster, type Card } from "~/types/models";
+import { api } from "~/utils/api";
 
 type CardLocation =
   | "player-deck"
@@ -27,17 +34,40 @@ export function CardLocationManagerProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [allCards] = useState<Card[]>(CARDS);
   const [cardLocations, setCardLocations] = useState<CardLocationMap>({
-    "player-deck": allCards.filter((_, i) => i % 8 === 0),
-    "player-hand": allCards.filter((_, i) => i % 8 === 1),
-    "player-board": allCards.filter((_, i) => i % 8 === 2),
-    "player-discard-pile": allCards.filter((_, i) => i % 8 === 3),
-    "opponent-deck": allCards.filter((_, i) => i % 8 === 4),
-    "opponent-hand": allCards.filter((_, i) => i % 8 === 5),
-    "opponent-board": allCards.filter((_, i) => i % 8 === 6),
-    "opponent-discard-pile": allCards.filter((_, i) => i % 8 === 7),
+    "player-deck": [],
+    "player-hand": [],
+    "player-board": [],
+    "player-discard-pile": [],
+    "opponent-deck": [],
+    "opponent-hand": [],
+    "opponent-board": [],
+    "opponent-discard-pile": [],
   });
+
+  const { data } = api.card.getAllMonsters.useQuery();
+
+  useEffect(() => {
+    if (!data) return;
+
+    const allCards = data.map((card) =>
+      initMonster({
+        id: card.id,
+        name: card.name,
+        image: card.image,
+        type: "monster",
+        cost: card.cost,
+        size: card.size,
+        stability: card.stability,
+      }),
+    );
+
+    setCardLocations((prevLocations) => ({
+      ...prevLocations,
+      "player-hand": allCards.filter((_, i) => i % 2 === 0),
+      "opponent-hand": allCards.filter((_, i) => i % 2 === 1),
+    }));
+  }, [data]);
 
   const moveCard = useCallback((cardId: string, to: CardLocation) => {
     // prevent moving card to the same location

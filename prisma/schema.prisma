@@ -2,34 +2,34 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "sqlite"
-    url      = "file:./dev.db"
-}
-
-model Spell {
-    id        Int      @id @default(autoincrement())
-    name      String
-    image     String
-    damage    Int
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    @@index([name])
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model Monster {
-    id        Int      @id @default(autoincrement())
-    name      String
-    image     String
-    cost      Int
-    size      Int
-    stability Int
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id        String   @id @default(cuid())
+  name      String
+  image     String
+  cost      Int
+  size      Int
+  stability Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    @@index([name])
+  @@index([name])
+}
+
+model Spell {
+  id        String   @id @default(cuid())
+  name      String
+  image     String
+  damage    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([name])
 }

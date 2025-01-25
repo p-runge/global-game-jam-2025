@@ -66,9 +66,6 @@ export default function Home() {
         <div className="relative h-full bg-blue-500">
           {/* game board anchor */}
           <div className="absolute left-1/2 top-1/2">
-            {/* temp center marker */}
-            <div className="absolute z-10 h-4 w-4 -translate-x-1/2 -translate-y-1/2 bg-amber-500"></div>
-
             {/* opponent */}
             <div className="absolute -top-[305px] left-[550px] -translate-x-1/2">
               <div className="h-card w-card bg-black text-white">
