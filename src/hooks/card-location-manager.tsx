@@ -3,9 +3,9 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
-import { CARDS } from "~/assets/cards";
 import { initMonster, type Card } from "~/types/models";
 import { api } from "~/utils/api";
 
@@ -69,31 +69,39 @@ export function CardLocationManagerProvider({
     }));
   }, [data]);
 
-  const moveCard = useCallback((cardId: string, to: CardLocation) => {
-    // prevent moving card to the same location
-    const movingCard = CARDS.find((c) => c.id === cardId);
-    if (!movingCard) return;
+  const allCards = useMemo(() => {
+    return Object.values(cardLocations).flat();
+  }, [cardLocations]);
 
-    console.log("move card", cardId, "to", to);
+  const moveCard = useCallback(
+    (cardId: string, to: CardLocation) => {
+      // prevent moving card to the same location
 
-    // update card locations
-    setCardLocations((prevLocations) => {
-      const newLocations = { ...prevLocations };
-      (Object.entries(newLocations) as [CardLocation, Card[]][]).forEach(
-        ([location, cards]) => {
-          // remove card from all locations
-          newLocations[location] = cards.filter((card) => card.id !== cardId);
+      const movingCard = allCards.find((c) => c.id === cardId);
+      if (!movingCard) return;
 
-          // add card to new location
-          if (location === to) {
-            newLocations[to] = [...cards, movingCard];
-          }
-        },
-      );
+      console.log("move card", cardId, "to", to);
 
-      return newLocations;
-    });
-  }, []);
+      // update card locations
+      setCardLocations((prevLocations) => {
+        const newLocations = { ...prevLocations };
+        (Object.entries(newLocations) as [CardLocation, Card[]][]).forEach(
+          ([location, cards]) => {
+            // remove card from all locations
+            newLocations[location] = cards.filter((card) => card.id !== cardId);
+
+            // add card to new location
+            if (location === to) {
+              newLocations[to] = [...cards, movingCard];
+            }
+          },
+        );
+
+        return newLocations;
+      });
+    },
+    [allCards],
+  );
 
   return (
     <CardLocationManagerContext.Provider
