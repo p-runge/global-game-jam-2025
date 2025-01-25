@@ -13,6 +13,7 @@ import {
   type DroppableId,
 } from "~/hooks/droppable-manager";
 import type { TBoard } from "~/types/TBoard";
+import { api } from "~/utils/api";
 
 const initialData: Record<DroppableId, TCard[]> = {
   "player-hand": CARDS.filter((_, i) => i % 2 === 0),
@@ -30,7 +31,8 @@ export default function Home() {
     name: "player",
     isOpponent: false,
   };
-
+  const monsterList = api.monster.getAllCards.useQuery();
+  console.log("monster list ", monsterList.data);
   const { droppables, moveItem } = useDroppableManager(initialData);
 
   const handleDragEnd = (event: DragEndEvent) => {
