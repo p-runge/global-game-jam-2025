@@ -7,9 +7,9 @@ export function Card({ card, hidden }: { card: Card; hidden: boolean }) {
   if (card.type === "monster") {
     return <MonsterCard card={card} />;
   }
-  if (card.type === "spell") {
-    return <SpellCard card={card} />;
-  }
+  //if (card.type === "spell") {
+  // return <SpellCard card={card} />;
+  //}
 }
 
 function BackSideCard() {

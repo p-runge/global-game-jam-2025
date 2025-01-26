@@ -1,4 +1,5 @@
 import { TRPCError } from "@trpc/server";
+import { emit } from "process";
 import { EventEmitter, on } from "stream";
 import { z } from "zod";
 import {
@@ -6,6 +7,7 @@ import {
   gameProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
+import { db } from "~/server/db";
 import { initMonster, type Card } from "~/server/types/models";
 
 type CardLocation =
@@ -28,13 +30,51 @@ function getUniqueDeckFromCards(cards: Card[]) {
       id: Math.random().toString(36).substring(7),
     }));
 }
+async function createNewGame(){
+  const id = Math.random().toString(36).substring(7);
 
+      const allMonsters = await db.monster.findMany();
+
+      const allCards: Card[] = allMonsters.map((monster) =>
+        initMonster({
+          id: monster.id,
+          name: monster.name,
+          image: monster.image,
+          type: "monster",
+          cost: monster.cost,
+          size: monster.size,
+          stability: monster.stability,
+        }),
+      );
+
+      // somehow save the game state
+      const game: GameState = {
+        turn: "player",
+        turnCount: 0,
+        cardLocations: {
+          "player-deck": getUniqueDeckFromCards(allCards),
+          "opponent-deck": getUniqueDeckFromCards(allCards),
+          "player-hand": [],
+          "player-board": [],
+          "player-discard-pile": [],
+          "opponent-hand": [],
+          "opponent-board": [],
+          "opponent-discard-pile": [],
+        },
+      };
+
+      // save the game state in the server session
+      gameStates[id] = game;
+      return id;
+}
 type GameState = {
   turn: "player" | "opponent";
   turnCount: number;
   cardLocations: CardLocationMap;
 };
 const gameStates: Record<string, GameState> = {};
+
+const queuedPlayers: string[] = [];
 
 const ee = new EventEmitter();
 
@@ -74,48 +114,44 @@ export const gameRouter = createTRPCRouter({
         }
       }
     }),
+  
+  lobby: publicProcedure
+  .subscription(async function* ({ signal }) {
+    let player;
+    console.log("queuedPlayers", queuedPlayers);
+    if (queuedPlayers[0]) {
+        console.log("queuedPlayers found", queuedPlayers);
+        player = queuedPlayers.shift()!;
+        const newGameId = await createNewGame();
+        ee.emit(`joinLobby-${player}`, newGameId);
+        yield newGameId;
+      } else {
+        console.log("queuedPlayers not found", queuedPlayers);
+        player = Math.random().toString(36).substring(7);
+        queuedPlayers.push(player);
+        console.log("queuedPlayers after push", queuedPlayers);
+        while (true) {
+          // listen for new events
+          for await (const [data] of on(ee, `joinLobby-${player}`, {
+            signal,
+          })) {
+            console.log("wtf is going on here", data);
+            const newGameId = data as string;
+            yield newGameId;
+          }
+        }
+      }
+  }),
+  
 
   create: publicProcedure
     .output(z.object({ id: z.string() }))
-    .mutation(async ({ ctx }) => {
-      const id = Math.random().toString(36).substring(7);
-
-      const allMonsters = await ctx.db.monster.findMany();
-
-      const allCards: Card[] = allMonsters.map((monster) =>
-        initMonster({
-          id: monster.id,
-          name: monster.name,
-          image: monster.image,
-          type: "monster",
-          cost: monster.cost,
-          size: monster.size,
-          stability: monster.stability,
-        }),
-      );
-
-      // somehow save the game state
-      const game: GameState = {
-        turn: "player",
-        turnCount: 0,
-        cardLocations: {
-          "player-deck": getUniqueDeckFromCards(allCards),
-          "opponent-deck": getUniqueDeckFromCards(allCards),
-          "player-hand": [],
-          "player-board": [],
-          "player-discard-pile": [],
-          "opponent-hand": [],
-          "opponent-board": [],
-          "opponent-discard-pile": [],
-        },
-      };
-
-      // save the game state in the server session
-      gameStates[id] = game;
-
+    .mutation(async () => {
+      const gameId = await createNewGame();
+     
       return {
-        id,
-        state: game,
+        id: gameId,
+        state: gameStates[gameId],
       };
     }),
 
