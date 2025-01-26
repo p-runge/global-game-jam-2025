@@ -206,7 +206,7 @@ export default function Game() {
                   key={card.id}
                   className="pointer-events-auto origin-top scale-50"
                 >
-                  <Card card={card} hidden={false}></Card>
+                  <Card card={card} hidden></Card>
                 </div>
               ))}
             </div>
