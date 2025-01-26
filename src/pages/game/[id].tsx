@@ -71,7 +71,7 @@ export default function Game() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-        <div className="relative h-full bg-blue-500">
+        <div className="relative h-full bg-[url('/background.jpg')] bg-cover bg-center">
           {/* turn info */}
           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-center">
             <div className="text-3xl font-bold">Turn Count: {turnCount}</div>
@@ -84,7 +84,7 @@ export default function Game() {
           <div className="absolute left-1/2 top-1/2">
             {/* opponent */}
             <div className="absolute -top-[305px] left-[570px] -translate-x-1/2">
-              <div className="h-card w-card bg-black text-white">
+              <div className="h-card w-card bg-blue-300/50 text-white">
                 {cardLocations["opponent-discard-pile"].map((card) => (
                   <div key={card.id}>
                     <Card card={card} hidden={false}></Card>
@@ -94,7 +94,7 @@ export default function Game() {
             </div>
 
             <div className="absolute -top-[305px] -translate-x-1/2">
-              <div className="flex h-card w-[940px] gap-[10px] bg-red-400">
+              <div className="flex h-card w-[940px] gap-[10px] bg-blue-300/50">
                 {cardLocations["opponent-board"].map((card) => (
                   <div key={card.id}>
                     {draggable?.droppableIds.find(
@@ -148,7 +148,7 @@ export default function Game() {
             <div className="absolute -bottom-[305px] -translate-x-1/2">
               {(() => {
                 const content = (
-                  <div className="flex h-card w-[940px] gap-[10px] bg-red-400">
+                  <div className="flex h-card w-[940px] gap-[10px] bg-blue-300/50">
                     {cardLocations["player-board"].map((card) => (
                       <div key={card.id}>
                         {(() => {
@@ -188,7 +188,7 @@ export default function Game() {
               })()}
             </div>
             <div className="absolute -bottom-[305px] right-[570px] translate-x-1/2">
-              <div className="h-card w-card bg-black text-white">
+              <div className="h-card w-card bg-blue-300/50 text-white">
                 {cardLocations["player-discard-pile"].map((card) => (
                   <div key={card.id}>
                     <Card card={card} hidden={false}></Card>
