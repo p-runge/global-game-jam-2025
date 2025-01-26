@@ -6,7 +6,7 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { initTRPC } from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
@@ -21,7 +21,9 @@ import { db } from "~/server/db";
  * These allow you to access things when processing a request, like the database, the session, etc.
  */
 
-type CreateContextOptions = Record<string, never>;
+type CreateContextOptions = {
+  gameId: string | undefined;
+};
 
 /**
  * This helper generates the "internals" for a tRPC context. If you need to use it, you can export
@@ -33,8 +35,9 @@ type CreateContextOptions = Record<string, never>;
  *
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
-const createInnerTRPCContext = (_opts: CreateContextOptions) => {
+const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
+    ...opts,
     db,
   };
 };
@@ -46,9 +49,11 @@ const createInnerTRPCContext = (_opts: CreateContextOptions) => {
  * @see https://trpc.io/docs/context
  */
 export const createTRPCContext = (_opts: CreateNextContextOptions) => {
-  // TODO: read game id from cookies
-  console.log("cookies", _opts.req.cookies);
-  return createInnerTRPCContext({});
+  const gameId = _opts.req.cookies.gameId;
+
+  return createInnerTRPCContext({
+    gameId,
+  });
 };
 
 /**
@@ -117,6 +122,23 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
   return result;
 });
 
+const gameMiddleware = t.middleware(async ({ ctx, next }) => {
+  const { gameId } = ctx;
+  if (!gameId) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "Missing game id",
+    });
+  }
+
+  return next({
+    ctx: {
+      ...ctx,
+      gameId,
+    },
+  });
+});
+
 /**
  * Public (unauthenticated) procedure
  *
@@ -125,3 +147,4 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
  * are logged in.
  */
 export const publicProcedure = t.procedure.use(timingMiddleware);
+export const gameProcedure = publicProcedure.use(gameMiddleware);

@@ -35,9 +35,11 @@ export function GameManagerProvider({
   const { data } = api.game.gameData.useSubscription(
     { id: gameId ?? null },
     {
-      onError: () => {
-        localStorage.removeItem("gameId");
-        setGameId(null);
+      onError: (error) => {
+        if (error.data?.code === "NOT_FOUND") {
+          localStorage.removeItem("gameId");
+          setGameId(null);
+        }
       },
     },
   );
@@ -73,6 +75,7 @@ export function GameManagerProvider({
 
     // save game id to local storage
     localStorage.setItem("gameId", gameId);
+    document.cookie = `gameId=${gameId}`;
   }, [gameId]);
 
   // const allCards = useMemo(() => {

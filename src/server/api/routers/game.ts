@@ -1,7 +1,11 @@
 import { TRPCError } from "@trpc/server";
 import { EventEmitter, on } from "stream";
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  gameProcedure,
+  publicProcedure,
+} from "~/server/api/trpc";
 import { initMonster, type Card } from "~/server/types/models";
 
 type CardLocation =
@@ -115,7 +119,7 @@ export const gameRouter = createTRPCRouter({
       };
     }),
 
-  moveCard: publicProcedure
+  moveCard: gameProcedure
     .input(
       z.object({
         cardId: z.string(),
@@ -131,18 +135,16 @@ export const gameRouter = createTRPCRouter({
         ]),
       }),
     )
-    .mutation(({ input: { cardId, to } }) => {
+    .mutation(({ ctx: { gameId }, input: { cardId, to } }) => {
       // TODO: check for game state in context and put it there
 
-      const gameId = Object.keys(gameStates)[0];
-      if (!gameId) {
+      const game = gameStates[gameId]!;
+      if (!game) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "No game found",
+          message: "Game not found",
         });
       }
-
-      const game = gameStates[gameId]!;
 
       const location = (Object.keys(game.cardLocations) as CardLocation[]).find(
         (loc) => game.cardLocations[loc].some((card) => card.id === cardId),
