@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { type Card, type Monster } from "~/server/types/models";
 import { api } from "~/utils/api";
 
@@ -36,8 +36,15 @@ export function GameManagerProvider({
   const router = useRouter();
   const gameId = router.query.id as string | undefined;
 
-  // TODO: this must returned by lobby subscription endpoint and set in its onData
-  const [playerId] = useState<"player-1" | "player-2">("player-1");
+  const [playerId, setPlayerId] = useState<string | undefined>();
+  useEffect(() => {
+    const cookie = document.cookie;
+    const playerId = cookie
+      .split(";")
+      .find((c) => c.includes("playerId"))
+      ?.split("=")[1];
+    setPlayerId(playerId);
+  }, []);
 
   const [cardLocations, setCardLocations] = useState<CardLocationMap>();
   const { data } = api.game.gameData.useSubscription(
