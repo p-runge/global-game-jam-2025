@@ -35,7 +35,9 @@ export default function Game() {
       droppableIds,
     });
   }
-
+  function endTurn() {
+    console.log("end turn");
+  }
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     startDragging(null);
@@ -189,6 +191,12 @@ export default function Game() {
               ))}
             </div>
           </div>
+          <button
+            className="absolute right-32 top-1/2 rounded-lg border bg-white p-4 text-center text-lg"
+            onClick={() => endTurn()}
+          >
+            End Turn
+          </button>
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2">
             <div className="pointer-events-none flex">
               {cardLocations["player-hand"].map((card) => (
