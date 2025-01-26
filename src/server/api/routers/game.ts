@@ -125,9 +125,9 @@ export const gameRouter = createTRPCRouter({
     if (queuedPlayers[0]) {
       console.log("queuedPlayers found", queuedPlayers);
       player = queuedPlayers.shift()!;
-      const newGameId = await createNewGame();
-      ee.emit(`joinLobby-${player}`, newGameId);
-      yield newGameId;
+      const gameId = await createNewGame();
+      ee.emit(`joinLobby-${player}`, { gameId, playerId: "player-1" });
+      yield { gameId, playerId: "player-2" };
     } else {
       console.log("queuedPlayers not found", queuedPlayers);
       player = Math.random().toString(36).substring(7);
@@ -138,9 +138,7 @@ export const gameRouter = createTRPCRouter({
         for await (const [data] of on(ee, `joinLobby-${player}`, {
           signal,
         })) {
-          console.log("wtf is going on here", data);
-          const newGameId = data as string;
-          yield newGameId;
+          yield data as { gameId: string; playerId: string };
         }
       }
     }
@@ -213,6 +211,7 @@ export const gameRouter = createTRPCRouter({
 
       const game = gameStates[gameId]!;
       if (!game) {
+        console.error("Game not found", gameId, Object.keys(gameStates));
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Game not found",

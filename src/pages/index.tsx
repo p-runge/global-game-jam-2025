@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useEffect } from "react";
 
 export default function Home() {
   const router = useRouter();
@@ -7,6 +7,12 @@ export default function Home() {
     console.log("join");
     void router.push("/lobby");
   }
+
+  useEffect(() => {
+    // clear cookies
+    document.cookie = "gameId=";
+    document.cookie = "playerId=";
+  }, []);
 
   return (
     <div>

@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { type Card, type Monster } from "~/server/types/models";
 import { api } from "~/utils/api";
 
@@ -46,7 +46,7 @@ export function GameManagerProvider({
       onError: (error) => {
         if (error.data?.code === "NOT_FOUND") {
           // TODO: this might be nicessary later on, no idea
-          // void router.push("/");
+          void router.push("/");
         }
       },
       onData: (data) => {
@@ -95,15 +95,6 @@ export function GameManagerProvider({
       },
     },
   );
-
-  useEffect(() => {
-    if (!gameId) return;
-
-    // save game id to local storage
-    localStorage.setItem("gameId", gameId);
-    document.cookie = `gameId=${gameId}`;
-    document.cookie = `playerId=${playerId}`;
-  }, [gameId, playerId]);
 
   const { mutate: moveCard } = api.game.moveCard.useMutation();
   const { mutate: updateMonster } = api.game.updateMonster.useMutation();

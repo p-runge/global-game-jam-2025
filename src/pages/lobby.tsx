@@ -4,9 +4,11 @@ import { api } from "~/utils/api";
 export default function Lobby() {
   const router = useRouter();
   const { data } = api.game.lobby.useSubscription(undefined, {
-    onData: (data) => {
-      console.log("meine Daten", data);
-      void router.push(`/game/${data}`);
+    onData: ({ gameId, playerId }) => {
+      // set cookies
+      document.cookie = `gameId=${gameId}`;
+      document.cookie = `playerId=${playerId}`;
+      void router.push(`/game/${gameId}`);
     },
     onError: (error) => {
       console.log("wtf error:", error);
