@@ -1,0 +1,48 @@
+name: Deploy to Production Environment
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up SSH key for passwordless logins
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server to known_hosts
+        run: |
+          ssh-keyscan -H ${{ vars.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Copy files to server
+        run: |
+          rsync -avz --delete ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.APP_DIRECTORY }}
+
+      - name: Build and serve app
+        uses: appleboy/ssh-action@master
+        with:
+          script: |
+            ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} << 'EOF'
+            cd ${{ vars.APP_DIRECTORY }}
+
+            echo "Delete app process if exists"
+            pm2 delete bubble || true
+
+            echo "Install app dependencies"
+            pnpm ci
+            echo "Dependencies installed."
+
+            echo "Build app"
+            pnpm run build
+            echo "app built."
+
+            echo "Start app"
+            pm2 start pnpm --name bubble -- run start
