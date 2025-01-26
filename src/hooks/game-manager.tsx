@@ -39,18 +39,6 @@ export function GameManagerProvider({
   const [playerId, setPlayerId] = useState<
     "player-1" | "player-2" | undefined
   >();
-  useEffect(() => {
-    const cookieValue = document.cookie
-      .split(";")
-      .find((c) => c.includes("playerId"))
-      ?.split("=")[1];
-
-    const playerId =
-      cookieValue === "player-1" || cookieValue === "player-2"
-        ? cookieValue
-        : undefined;
-    setPlayerId(playerId);
-  }, []);
 
   const [cardLocations, setCardLocations] = useState<CardLocationMap>();
   const { data } = api.game.gameData.useSubscription(
@@ -62,6 +50,18 @@ export function GameManagerProvider({
         }
       },
       onData: (data) => {
+        // read playerId from cookie
+        const cookieValue = document.cookie
+          .split(";")
+          .find((c) => c.includes("playerId"))
+          ?.split("=")[1];
+
+        const playerId =
+          cookieValue === "player-1" || cookieValue === "player-2"
+            ? cookieValue
+            : undefined;
+        setPlayerId(playerId);
+
         if (playerId === undefined) {
           console.error("isPlayer1 is not set");
           // return;
