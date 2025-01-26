@@ -13,7 +13,7 @@ import { useGameManager } from "~/hooks/game-manager";
 import { api } from "~/utils/api";
 
 export default function Game() {
-  const { turn, turnCount, cardLocations, moveCard } = useGameManager();
+  const { turn, turnCount, cardLocations, moveCard, winner } = useGameManager();
   const { startDragging, moveItem, draggable } = useDraggingManager();
 
   function handleDragStart(event: DragStartEvent) {
@@ -226,6 +226,14 @@ export default function Game() {
           </div>
         </div>
       </DndContext>
+      {winner !== null && (
+        <div className="">
+          <div className="absolute inset-0 left-1/4 top-1/4 h-1/2 w-1/2 content-center justify-center bg-black/80 text-center text-6xl text-white">
+            {winner === "player" && <p>You Won</p>}
+            {winner === "opponent" && <p>You Lost</p>}
+          </div>
+        </div>
+      )}
     </Frame>
   );
 }

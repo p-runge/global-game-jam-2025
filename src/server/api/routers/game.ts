@@ -50,6 +50,7 @@ async function createNewGame() {
   const game: GameState = {
     activePlayer: "player-1",
     turnCount: 0,
+    winner: null,
     cardLocations: {
       "player-1-deck": getUniqueDeckFromCards(allCards),
       "player-1-hand": [],
@@ -69,6 +70,7 @@ async function createNewGame() {
 type GameState = {
   activePlayer: "player-1" | "player-2";
   turnCount: number;
+  winner: "player-1" | "player-2"| null;
   cardLocations: CardLocationMap;
 };
 const gameStates: Record<string, GameState> = {};
@@ -273,9 +275,11 @@ export const gameRouter = createTRPCRouter({
 
         card.currentSize = Math.max(currentSize, 0);
         card.currentStability = Math.max(currentStability, 0);
-
+        
         const isMonsterDefeated = card.currentStability <= 0;
-
+        if (card.currentSize >= 20 ) {
+          game.winner = game.activePlayer;
+        }
         let updatedGame = game;
         if (isMonsterDefeated) {
           updatedGame = moveCard({

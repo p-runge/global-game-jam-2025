@@ -25,6 +25,7 @@ type GameManager = {
     currentSize: Monster["currentSize"];
     currentStability: Monster["currentStability"];
   }) => void;
+  winner: "player" | "opponent" | null;
 };
 const GameManagerContext = createContext<GameManager | undefined>(undefined);
 
@@ -128,6 +129,12 @@ export function GameManagerProvider({
         },
         moveCard,
         updateMonster,
+        winner:
+          data?.winner === null
+            ? null
+            : data?.winner === playerId
+              ? "player"
+              : "opponent",
       }}
     >
       {children}
