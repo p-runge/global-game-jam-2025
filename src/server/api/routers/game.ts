@@ -1,9 +1,4 @@
 import { TRPCError } from "@trpc/server";
-<<<<<<< Updated upstream
-=======
-import { endianness } from "os";
-import { emit } from "process";
->>>>>>> Stashed changes
 import { EventEmitter, on } from "stream";
 import { z } from "zod";
 import {
@@ -143,11 +138,8 @@ export const gameRouter = createTRPCRouter({
       }
     }
   }),
-<<<<<<< Updated upstream
-=======
-  
-  endTurn: publicProcedure
-  .mutation(async ({ ctx: { gameId } }) => {
+
+  endTurn: publicProcedure.mutation(async ({ ctx: { gameId } }) => {
     const game = gameStates[gameId!];
     if (!game) {
       throw new TRPCError({
@@ -162,9 +154,7 @@ export const gameRouter = createTRPCRouter({
     ee.emit(`updateGameState-${gameId}`, game);
 
     return game;
-  }
-),
->>>>>>> Stashed changes
+  }),
 
   create: publicProcedure
     .output(z.object({ id: z.string() }))
