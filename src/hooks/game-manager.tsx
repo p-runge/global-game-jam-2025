@@ -32,6 +32,11 @@ export function GameManagerProvider({
   children: React.ReactNode;
 }) {
   const [gameId, setGameId] = useState<string | null>();
+
+  // TODO: this must returned by lobby subscription endpoint and set in its onData
+  const [playerId] = useState<"player-1" | "player-2">("player-1");
+
+  const [cardLocations, setCardLocations] = useState<CardLocationMap>();
   const { data } = api.game.gameData.useSubscription(
     { id: gameId ?? null },
     {
@@ -40,6 +45,50 @@ export function GameManagerProvider({
           localStorage.removeItem("gameId");
           setGameId(null);
         }
+      },
+      onData: (data) => {
+        if (playerId === undefined) {
+          console.error("isPlayer1 is not set");
+          // return;
+        }
+
+        // map server card locations to client ones based on isPlayer1
+        const clientCardLocations: CardLocationMap = {
+          "player-deck":
+            playerId === "player-1"
+              ? data.cardLocations["player-1-deck"]
+              : data.cardLocations["player-2-deck"],
+          "player-hand":
+            playerId === "player-1"
+              ? data.cardLocations["player-1-hand"]
+              : data.cardLocations["player-2-hand"],
+          "player-board":
+            playerId === "player-1"
+              ? data.cardLocations["player-1-board"]
+              : data.cardLocations["player-2-board"],
+          "player-discard-pile":
+            playerId === "player-1"
+              ? data.cardLocations["player-1-discard-pile"]
+              : data.cardLocations["player-2-discard-pile"],
+          "opponent-deck":
+            playerId === "player-1"
+              ? data.cardLocations["player-2-deck"]
+              : data.cardLocations["player-1-deck"],
+          "opponent-hand":
+            playerId === "player-1"
+              ? data.cardLocations["player-2-hand"]
+              : data.cardLocations["player-1-hand"],
+          "opponent-board":
+            playerId === "player-1"
+              ? data.cardLocations["player-2-board"]
+              : data.cardLocations["player-1-board"],
+          "opponent-discard-pile":
+            playerId === "player-1"
+              ? data.cardLocations["player-2-discard-pile"]
+              : data.cardLocations["player-1-discard-pile"],
+        };
+
+        setCardLocations(clientCardLocations);
       },
     },
   );
@@ -76,6 +125,7 @@ export function GameManagerProvider({
     // save game id to local storage
     localStorage.setItem("gameId", gameId);
     document.cookie = `gameId=${gameId}`;
+    document.cookie = `playerId=${playerId}`;
   }, [gameId]);
 
   // const allCards = useMemo(() => {
@@ -90,8 +140,7 @@ export function GameManagerProvider({
     cardId: string,
     monsterUpdates: Pick<Monster, "currentSize" | "currentStability">,
   ) {
-    if (!data) return;
-    const { cardLocations } = data;
+    if (!cardLocations) return;
 
     const isMonsterDefeated = monsterUpdates.currentStability <= 0;
     const isPlayerCard = cardLocations["player-board"].some(
@@ -108,9 +157,9 @@ export function GameManagerProvider({
   return (
     <GameManagerContext.Provider
       value={{
-        turn: data?.turn ?? "player",
+        turn: data?.activePlayer === playerId ? "player" : "opponent",
         turnCount: data?.turnCount ?? 0,
-        cardLocations: data?.cardLocations ?? {
+        cardLocations: cardLocations ?? {
           "player-deck": [],
           "player-hand": [],
           "player-board": [],

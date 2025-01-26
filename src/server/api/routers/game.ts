@@ -1,5 +1,4 @@
 import { TRPCError } from "@trpc/server";
-import { emit } from "process";
 import { EventEmitter, on } from "stream";
 import { z } from "zod";
 import {
@@ -11,14 +10,14 @@ import { db } from "~/server/db";
 import { initMonster, type Card } from "~/server/types/models";
 
 type CardLocation =
-  | "player-deck"
-  | "player-hand"
-  | "player-board"
-  | "player-discard-pile"
-  | "opponent-deck"
-  | "opponent-hand"
-  | "opponent-board"
-  | "opponent-discard-pile";
+  | "player-1-deck"
+  | "player-1-hand"
+  | "player-1-board"
+  | "player-1-discard-pile"
+  | "player-2-deck"
+  | "player-2-hand"
+  | "player-2-board"
+  | "player-2-discard-pile";
 
 type CardLocationMap = Record<CardLocation, Card[]>;
 
@@ -30,45 +29,45 @@ function getUniqueDeckFromCards(cards: Card[]) {
       id: Math.random().toString(36).substring(7),
     }));
 }
-async function createNewGame(){
+async function createNewGame() {
   const id = Math.random().toString(36).substring(7);
 
-      const allMonsters = await db.monster.findMany();
+  const allMonsters = await db.monster.findMany();
 
-      const allCards: Card[] = allMonsters.map((monster) =>
-        initMonster({
-          id: monster.id,
-          name: monster.name,
-          image: monster.image,
-          type: "monster",
-          cost: monster.cost,
-          size: monster.size,
-          stability: monster.stability,
-        }),
-      );
+  const allCards: Card[] = allMonsters.map((monster) =>
+    initMonster({
+      id: monster.id,
+      name: monster.name,
+      image: monster.image,
+      type: "monster",
+      cost: monster.cost,
+      size: monster.size,
+      stability: monster.stability,
+    }),
+  );
 
-      // somehow save the game state
-      const game: GameState = {
-        turn: "player",
-        turnCount: 0,
-        cardLocations: {
-          "player-deck": getUniqueDeckFromCards(allCards),
-          "opponent-deck": getUniqueDeckFromCards(allCards),
-          "player-hand": [],
-          "player-board": [],
-          "player-discard-pile": [],
-          "opponent-hand": [],
-          "opponent-board": [],
-          "opponent-discard-pile": [],
-        },
-      };
+  // somehow save the game state
+  const game: GameState = {
+    activePlayer: "player-1",
+    turnCount: 0,
+    cardLocations: {
+      "player-1-deck": getUniqueDeckFromCards(allCards),
+      "player-1-hand": [],
+      "player-1-board": [],
+      "player-1-discard-pile": [],
+      "player-2-deck": getUniqueDeckFromCards(allCards),
+      "player-2-hand": [],
+      "player-2-board": [],
+      "player-2-discard-pile": [],
+    },
+  };
 
-      // save the game state in the server session
-      gameStates[id] = game;
-      return id;
+  // save the game state in the server session
+  gameStates[id] = game;
+  return id;
 }
 type GameState = {
-  turn: "player" | "opponent";
+  activePlayer: "player-1" | "player-2";
   turnCount: number;
   cardLocations: CardLocationMap;
 };
@@ -114,41 +113,39 @@ export const gameRouter = createTRPCRouter({
         }
       }
     }),
-  
-  lobby: publicProcedure
-  .subscription(async function* ({ signal }) {
+
+  lobby: publicProcedure.subscription(async function* ({ signal }) {
     let player;
     console.log("queuedPlayers", queuedPlayers);
     if (queuedPlayers[0]) {
-        console.log("queuedPlayers found", queuedPlayers);
-        player = queuedPlayers.shift()!;
-        const newGameId = await createNewGame();
-        ee.emit(`joinLobby-${player}`, newGameId);
-        yield newGameId;
-      } else {
-        console.log("queuedPlayers not found", queuedPlayers);
-        player = Math.random().toString(36).substring(7);
-        queuedPlayers.push(player);
-        console.log("queuedPlayers after push", queuedPlayers);
-        while (true) {
-          // listen for new events
-          for await (const [data] of on(ee, `joinLobby-${player}`, {
-            signal,
-          })) {
-            console.log("wtf is going on here", data);
-            const newGameId = data as string;
-            yield newGameId;
-          }
+      console.log("queuedPlayers found", queuedPlayers);
+      player = queuedPlayers.shift()!;
+      const newGameId = await createNewGame();
+      ee.emit(`joinLobby-${player}`, newGameId);
+      yield newGameId;
+    } else {
+      console.log("queuedPlayers not found", queuedPlayers);
+      player = Math.random().toString(36).substring(7);
+      queuedPlayers.push(player);
+      console.log("queuedPlayers after push", queuedPlayers);
+      while (true) {
+        // listen for new events
+        for await (const [data] of on(ee, `joinLobby-${player}`, {
+          signal,
+        })) {
+          console.log("wtf is going on here", data);
+          const newGameId = data as string;
+          yield newGameId;
         }
       }
+    }
   }),
-  
 
   create: publicProcedure
     .output(z.object({ id: z.string() }))
     .mutation(async () => {
       const gameId = await createNewGame();
-     
+
       return {
         id: gameId,
         state: gameStates[gameId],
@@ -171,8 +168,21 @@ export const gameRouter = createTRPCRouter({
         ]),
       }),
     )
-    .mutation(({ ctx: { gameId }, input: { cardId, to } }) => {
+    .mutation(({ ctx: { gameId, playerId }, input: { cardId, to } }) => {
       // TODO: check for game state in context and put it there
+
+      // map client card locations to server ones based on isPlayer1
+      const serverTo = (
+        (playerId === "player-1" && to.startsWith("player")) ||
+        (playerId === "player-2" && to.startsWith("opponent"))
+          ? to.replace("player", "player-1").replace("opponent", "player-2")
+          : to.replace("player", "player-2").replace("opponent", "player-1")
+      ) as CardLocation;
+      console.table([
+        ["playerId", playerId],
+        ["to", to],
+        ["serverTo", serverTo],
+      ]);
 
       const game = gameStates[gameId]!;
       if (!game) {
@@ -206,7 +216,7 @@ export const gameRouter = createTRPCRouter({
       game.cardLocations[location] = game.cardLocations[location].filter(
         (card) => card.id !== cardId,
       );
-      game.cardLocations[to].push(card);
+      game.cardLocations[serverTo].push(card);
 
       ee.emit(`updateGameState-${gameId}`, game);
 

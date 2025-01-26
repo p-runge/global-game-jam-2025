@@ -23,6 +23,7 @@ import { db } from "~/server/db";
 
 type CreateContextOptions = {
   gameId: string | undefined;
+  playerId: "player-1" | "player-2" | undefined;
 };
 
 /**
@@ -50,9 +51,12 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
  */
 export const createTRPCContext = (_opts: CreateNextContextOptions) => {
   const gameId = _opts.req.cookies.gameId;
+  const playerId = _opts.req.cookies.playerId;
 
   return createInnerTRPCContext({
     gameId,
+    playerId:
+      playerId === "player-1" || playerId === "player-2" ? playerId : undefined,
   });
 };
 
@@ -123,11 +127,12 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
 });
 
 const gameMiddleware = t.middleware(async ({ ctx, next }) => {
-  const { gameId } = ctx;
-  if (!gameId) {
+  const { gameId, playerId } = ctx;
+  if (!gameId || !playerId) {
+    console.error("Missing game ID or player ID", { gameId, playerId });
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "Missing game id",
+      message: "Missing game ID or player ID",
     });
   }
 
@@ -135,6 +140,7 @@ const gameMiddleware = t.middleware(async ({ ctx, next }) => {
     ctx: {
       ...ctx,
       gameId,
+      playerId,
     },
   });
 });
