@@ -129,12 +129,11 @@ export function GameManagerProvider({
         },
         moveCard,
         updateMonster,
-        winner:
-          data?.winner === null
-            ? null
-            : data?.winner === playerId
-              ? "player"
-              : "opponent",
+        winner: !data?.winner
+          ? null
+          : data.winner === playerId
+            ? "player"
+            : "opponent",
       }}
     >
       {children}
