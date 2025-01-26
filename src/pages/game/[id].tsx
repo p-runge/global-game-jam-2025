@@ -124,7 +124,7 @@ export default function Game() {
                     onClick={() => {
                       console.log("draw card from player deck");
                       if (cardLocations["player-hand"].length < 5) {
-                        moveCard(card.id, "player-hand");
+                        moveCard({ cardId: card.id, to: "player-hand" });
                       }
                     }}
                   >

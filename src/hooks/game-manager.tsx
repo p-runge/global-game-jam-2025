@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import { createContext, useContext, useEffect, useState } from "react";
 import { type Card, type Monster } from "~/server/types/models";
 import { api } from "~/utils/api";
@@ -32,7 +33,8 @@ export function GameManagerProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [gameId, setGameId] = useState<string | null>();
+  const router = useRouter();
+  const gameId = router.query.id as string | undefined;
 
   // TODO: this must returned by lobby subscription endpoint and set in its onData
   const [playerId] = useState<"player-1" | "player-2">("player-1");
@@ -43,8 +45,8 @@ export function GameManagerProvider({
     {
       onError: (error) => {
         if (error.data?.code === "NOT_FOUND") {
-          localStorage.removeItem("gameId");
-          setGameId(null);
+          // TODO: this might be nicessary later on, no idea
+          // void router.push("/");
         }
       },
       onData: (data) => {
@@ -93,32 +95,6 @@ export function GameManagerProvider({
       },
     },
   );
-  const { mutate: createGame } = api.game.create.useMutation({
-    onSuccess: (data) => {
-      setGameId(data.id);
-    },
-  });
-
-  useEffect(() => {
-    if (gameId === undefined) {
-      return;
-    }
-
-    if (!gameId) {
-      createGame();
-    }
-  }, [gameId, createGame]);
-
-  useEffect(() => {
-    // get game id from local storage
-    const gameId = localStorage.getItem("gameId");
-    if (!gameId) {
-      setGameId(null);
-      return;
-    }
-
-    setGameId(gameId);
-  }, []);
 
   useEffect(() => {
     if (!gameId) return;
