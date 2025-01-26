@@ -11,6 +11,7 @@ import { Frame } from "~/components/frame";
 import { useDraggingManager, type DroppableId } from "~/hooks/dragging-manager";
 import { useGameManager } from "~/hooks/game-manager";
 import { api } from "~/utils/api";
+import { cn } from "~/utils/cn";
 
 export default function Game() {
   const { turn, turnCount, cardLocations, moveCard, winner } = useGameManager();
@@ -125,9 +126,13 @@ export default function Game() {
               <div className="h-card w-card bg-green-400">
                 {cardLocations["player-deck"].map((card) => (
                   <div
-                    className="absolute cursor-pointer"
+                    className={cn(
+                      "absolute",
+                      turn === "player" && "cursor-pointer",
+                    )}
                     key={card.id}
                     onClick={() => {
+                      if (turn !== "player") return;
                       console.log("draw card from player deck");
                       if (cardLocations["player-hand"].length < 5) {
                         moveCard({ cardId: card.id, to: "player-hand" });
@@ -146,19 +151,31 @@ export default function Game() {
                   <div className="flex h-card w-[940px] gap-[10px] bg-red-400">
                     {cardLocations["player-board"].map((card) => (
                       <div key={card.id}>
-                        <Draggable
-                          id={card.id}
-                          droppableIds={cardLocations["opponent-board"]
-                            .filter(
-                              (c) =>
-                                card.type === "monster" &&
-                                c.type === "monster" &&
-                                c.currentSize < card.currentSize,
-                            )
-                            .map((c) => `opponent-card-${c.id}` as DroppableId)}
-                        >
-                          <Card card={card} hidden={false}></Card>
-                        </Draggable>
+                        {(() => {
+                          const content = (
+                            <Card card={card} hidden={false}></Card>
+                          );
+
+                          return turn === "player" ? (
+                            <Draggable
+                              id={card.id}
+                              droppableIds={cardLocations["opponent-board"]
+                                .filter(
+                                  (c) =>
+                                    card.type === "monster" &&
+                                    c.type === "monster" &&
+                                    c.currentSize < card.currentSize,
+                                )
+                                .map(
+                                  (c) => `opponent-card-${c.id}` as DroppableId,
+                                )}
+                            >
+                              {content}
+                            </Draggable>
+                          ) : (
+                            <>{content}</>
+                          );
+                        })()}
                       </div>
                     ))}
                   </div>
@@ -170,7 +187,6 @@ export default function Game() {
                 );
               })()}
             </div>
-
             <div className="absolute -bottom-[305px] right-[570px] translate-x-1/2">
               <div className="h-card w-card bg-black text-white">
                 {cardLocations["player-discard-pile"].map((card) => (
@@ -210,16 +226,23 @@ export default function Game() {
                   key={card.id}
                   className="pointer-events-auto -mx-[45px] origin-bottom scale-50 transition-transform hover:z-10 hover:scale-100"
                 >
-                  <Draggable
-                    id={card.id}
-                    droppableIds={
-                      cardLocations["player-board"].length < 5
-                        ? ["player-board"]
-                        : []
-                    }
-                  >
-                    <Card card={card} hidden={false}></Card>
-                  </Draggable>
+                  {(() => {
+                    const content = <Card card={card} hidden={false}></Card>;
+                    return turn === "player" ? (
+                      <Draggable
+                        id={card.id}
+                        droppableIds={
+                          cardLocations["player-board"].length < 5
+                            ? ["player-board"]
+                            : []
+                        }
+                      >
+                        {content}
+                      </Draggable>
+                    ) : (
+                      <>{content}</>
+                    );
+                  })()}
                 </div>
               ))}
             </div>
