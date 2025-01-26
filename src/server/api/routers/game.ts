@@ -143,9 +143,10 @@ export const gameRouter = createTRPCRouter({
       }
     }
   }),
-
-  endTurn: publicProcedure.mutation(async ({ ctx: { gameId } }) => {
-    const game = gameStates[gameId!];
+  
+  endTurn: gameProcedure
+  .mutation(async ({ ctx: { gameId, playerId } }) => {
+    const game = gameStates[gameId];
     if (!game) {
       throw new TRPCError({
         code: "NOT_FOUND",
@@ -153,7 +154,7 @@ export const gameRouter = createTRPCRouter({
       });
     }
 
-    // game.turn = game.turn === "player" ? "opponent" : "player";
+    game.activePlayer = playerId === "player-1" ? "player-2" : "player-1";
     game.turnCount++;
 
     ee.emit(`updateGameState-${gameId}`, game);

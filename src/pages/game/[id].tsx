@@ -8,8 +8,9 @@ import { Card } from "~/components/card";
 import Draggable from "~/components/draggable";
 import Droppable from "~/components/droppable";
 import { Frame } from "~/components/frame";
-import { useGameManager } from "~/hooks/game-manager";
 import { useDraggingManager, type DroppableId } from "~/hooks/dragging-manager";
+import { useGameManager } from "~/hooks/game-manager";
+import { api } from "~/utils/api";
 
 export default function Game() {
   const { turn, turnCount, cardLocations, moveCard } = useGameManager();
@@ -35,8 +36,11 @@ export default function Game() {
       droppableIds,
     });
   }
+
+  const { mutate } = api.game.endTurn.useMutation();
+
   function endTurn() {
-    console.log("end turn");
+    mutate();
   }
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -191,12 +195,14 @@ export default function Game() {
               ))}
             </div>
           </div>
-          <button
-            className="absolute right-32 top-1/2 rounded-lg border bg-white p-4 text-center text-lg"
-            onClick={() => endTurn()}
-          >
-            End Turn
-          </button>
+          {turn === "player" && (
+            <button
+              className="absolute right-32 top-1/2 rounded-lg border bg-white p-4 text-center text-lg"
+              onClick={() => endTurn()}
+            >
+              End Turn
+            </button>
+          )}
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2">
             <div className="pointer-events-none flex">
               {cardLocations["player-hand"].map((card) => (
