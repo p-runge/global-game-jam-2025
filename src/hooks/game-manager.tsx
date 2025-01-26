@@ -36,13 +36,19 @@ export function GameManagerProvider({
   const router = useRouter();
   const gameId = router.query.id as string | undefined;
 
-  const [playerId, setPlayerId] = useState<string | undefined>();
+  const [playerId, setPlayerId] = useState<
+    "player-1" | "player-2" | undefined
+  >();
   useEffect(() => {
-    const cookie = document.cookie;
-    const playerId = cookie
+    const cookieValue = document.cookie
       .split(";")
       .find((c) => c.includes("playerId"))
       ?.split("=")[1];
+
+    const playerId =
+      cookieValue === "player-1" || cookieValue === "player-2"
+        ? cookieValue
+        : undefined;
     setPlayerId(playerId);
   }, []);
 
@@ -52,7 +58,6 @@ export function GameManagerProvider({
     {
       onError: (error) => {
         if (error.data?.code === "NOT_FOUND") {
-          // TODO: this might be nicessary later on, no idea
           void router.push("/");
         }
       },
