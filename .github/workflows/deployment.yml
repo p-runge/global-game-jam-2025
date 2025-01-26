@@ -34,6 +34,7 @@ jobs:
         with:
           host: ${{ vars.SSH_HOST }}
           username: ${{ vars.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             echo "build and serve"
             ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} << 'EOF'
