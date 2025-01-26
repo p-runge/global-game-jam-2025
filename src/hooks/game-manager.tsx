@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { type Card, type Monster } from "~/server/types/models";
 import { api } from "~/utils/api";
 
@@ -24,7 +18,7 @@ type GameManager = {
   turn: "player" | "opponent";
   turnCount: number;
   cardLocations: CardLocationMap;
-  moveCard: (cardId: string, to: CardLocation) => void;
+  moveCard: (data: { cardId: string; to: CardLocation }) => void;
   updateMonster: (
     cardId: string,
     card: Pick<Monster, "currentSize" | "currentStability">,
@@ -61,7 +55,7 @@ export function GameManagerProvider({
     if (!gameId) {
       createGame();
     }
-  }, [gameId]);
+  }, [gameId, createGame]);
 
   useEffect(() => {
     // get game id from local storage
@@ -86,39 +80,7 @@ export function GameManagerProvider({
   //   return Object.values(data.cardLocations).flat();
   // }, [data]);
 
-  const { mutate: moveCardMutation } = api.game.moveCard.useMutation();
-
-  const moveCard = useCallback((cardId: string, to: CardLocation) => {
-    // prevent moving card to the same location
-
-    moveCardMutation({
-      cardId,
-      to,
-    });
-
-    // const movingCard = allCards.find((c) => c.id === cardId);
-    // if (!movingCard) return;
-
-    // console.log("move card", cardId, "to", to);
-
-    // // update card locations
-    // setCardLocations((prevLocations) => {
-    //   const newLocations = { ...prevLocations };
-    //   (Object.entries(newLocations) as [CardLocation, Card[]][]).forEach(
-    //     ([location, cards]) => {
-    //       // remove card from all locations
-    //       newLocations[location] = cards.filter((card) => card.id !== cardId);
-
-    //       // add card to new location
-    //       if (location === to) {
-    //         newLocations[to] = [...cards, movingCard];
-    //       }
-    //     },
-    //   );
-
-    //   return newLocations;
-    // });
-  }, []);
+  const { mutate: moveCard } = api.game.moveCard.useMutation();
 
   // update currentSize and currentStability when card is updated
   function updateMonster(
@@ -133,33 +95,11 @@ export function GameManagerProvider({
       (c) => c.id === cardId,
     );
     if (isMonsterDefeated) {
-      // moveCard(
-      //   cardId,
-      //   isPlayerCard ? "player-discard-pile" : "opponent-discard-pile",
-      // );
+      moveCard({
+        cardId,
+        to: isPlayerCard ? "player-discard-pile" : "opponent-discard-pile",
+      });
     }
-
-    // (prevLocations) => {
-    //   const newLocations = { ...prevLocations };
-    //   (Object.entries(newLocations) as [CardLocation, Card[]][]).forEach(
-    //     ([location, cards]) => {
-    //       newLocations[location] = cards.map((card) =>
-    //         card.id === cardId
-    //           ? {
-    //               ...card,
-    //               currentSize: Math.max(monsterUpdates.currentSize, 0),
-    //               currentStability: Math.max(
-    //                 monsterUpdates.currentStability,
-    //                 0,
-    //               ),
-    //             }
-    //           : card,
-    //       );
-    //     },
-    //   );
-
-    //   return newLocations;
-    // };
   }
 
   return (
