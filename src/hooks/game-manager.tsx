@@ -19,10 +19,11 @@ type GameManager = {
   turnCount: number;
   cardLocations: CardLocationMap;
   moveCard: (data: { cardId: string; to: CardLocation }) => void;
-  updateMonster: (
-    cardId: string,
-    card: Pick<Monster, "currentSize" | "currentStability">,
-  ) => void;
+  updateMonster: (data: {
+    cardId: string;
+    currentSize: Monster["currentSize"];
+    currentStability: Monster["currentStability"];
+  }) => void;
 };
 const GameManagerContext = createContext<GameManager | undefined>(undefined);
 
@@ -126,33 +127,10 @@ export function GameManagerProvider({
     localStorage.setItem("gameId", gameId);
     document.cookie = `gameId=${gameId}`;
     document.cookie = `playerId=${playerId}`;
-  }, [gameId]);
-
-  // const allCards = useMemo(() => {
-  //   if (!data) return [];
-  //   return Object.values(data.cardLocations).flat();
-  // }, [data]);
+  }, [gameId, playerId]);
 
   const { mutate: moveCard } = api.game.moveCard.useMutation();
-
-  // update currentSize and currentStability when card is updated
-  function updateMonster(
-    cardId: string,
-    monsterUpdates: Pick<Monster, "currentSize" | "currentStability">,
-  ) {
-    if (!cardLocations) return;
-
-    const isMonsterDefeated = monsterUpdates.currentStability <= 0;
-    const isPlayerCard = cardLocations["player-board"].some(
-      (c) => c.id === cardId,
-    );
-    if (isMonsterDefeated) {
-      moveCard({
-        cardId,
-        to: isPlayerCard ? "player-discard-pile" : "opponent-discard-pile",
-      });
-    }
-  }
+  const { mutate: updateMonster } = api.game.updateMonster.useMutation();
 
   return (
     <GameManagerContext.Provider

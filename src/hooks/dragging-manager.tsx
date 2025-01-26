@@ -36,12 +36,14 @@ export const useDraggingManager = () => {
         const newSize = attacker.currentSize + defender.currentSize;
         const newStability = attacker.currentStability - defender.currentSize;
 
-        updateMonster(attacker.id, {
+        updateMonster({
+          cardId: attacker.id,
           currentSize: newSize,
           currentStability: newStability,
         });
 
-        updateMonster(defender.id, {
+        updateMonster({
+          cardId: defender.id,
           currentSize: 0,
           currentStability: 0,
         });

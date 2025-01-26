@@ -192,34 +192,117 @@ export const gameRouter = createTRPCRouter({
         });
       }
 
-      const location = (Object.keys(game.cardLocations) as CardLocation[]).find(
-        (loc) => game.cardLocations[loc].some((card) => card.id === cardId),
-      );
-      if (!location) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Card not found",
-        });
-      }
+      const updatedGame = moveCard({ game, cardId, to: serverTo });
 
-      const card = game.cardLocations[location].find(
-        (card) => card.id === cardId,
-      );
-
-      if (!card) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Card not found",
-        });
-      }
-
-      game.cardLocations[location] = game.cardLocations[location].filter(
-        (card) => card.id !== cardId,
-      );
-      game.cardLocations[serverTo].push(card);
-
-      ee.emit(`updateGameState-${gameId}`, game);
+      ee.emit(`updateGameState-${gameId}`, updatedGame);
 
       return game;
     }),
+
+  updateMonster: gameProcedure
+    .input(
+      z.object({
+        cardId: z.string(),
+        currentSize: z.number(),
+        currentStability: z.number(),
+      }),
+    )
+    .mutation(
+      ({
+        ctx: { gameId },
+        input: { cardId, currentSize, currentStability },
+      }) => {
+        const game = gameStates[gameId]!;
+        if (!game) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Game not found",
+          });
+        }
+
+        const location = (
+          Object.keys(game.cardLocations) as CardLocation[]
+        ).find((loc) =>
+          game.cardLocations[loc].some((card) => card.id === cardId),
+        );
+        if (!location) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Card not found",
+          });
+        }
+
+        const card = game.cardLocations[location].find(
+          (card) => card.id === cardId,
+        );
+        if (!card) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Card not found",
+          });
+        }
+
+        if (card.type !== "monster") {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Card is not a monster",
+          });
+        }
+
+        card.currentSize = Math.max(currentSize, 0);
+        card.currentStability = Math.max(currentStability, 0);
+
+        const isMonsterDefeated = card.currentStability <= 0;
+
+        let updatedGame = game;
+        if (isMonsterDefeated) {
+          updatedGame = moveCard({
+            game,
+            cardId: card.id,
+            to: location.startsWith("player-1")
+              ? "player-1-discard-pile"
+              : "player-2-discard-pile",
+          });
+        }
+
+        ee.emit(`updateGameState-${gameId}`, updatedGame);
+
+        return game;
+      },
+    ),
 });
+
+function moveCard({
+  game,
+  cardId,
+  to,
+}: {
+  game: GameState;
+  cardId: string;
+  to: CardLocation;
+}) {
+  const location = (Object.keys(game.cardLocations) as CardLocation[]).find(
+    (loc) => game.cardLocations[loc].some((card) => card.id === cardId),
+  );
+  if (!location) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Card not found",
+    });
+  }
+
+  const card = game.cardLocations[location].find((card) => card.id === cardId);
+  if (!card) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Card not found",
+    });
+  }
+
+  game.cardLocations[location] = game.cardLocations[location].filter(
+    (card) => card.id !== cardId,
+  );
+  game.cardLocations[to].push(card);
+
+  return game;
+}
