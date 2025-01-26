@@ -115,24 +115,29 @@ export const gameRouter = createTRPCRouter({
     }),
 
   lobby: publicProcedure.subscription(async function* ({ signal }) {
-    let player;
-    console.log("queuedPlayers", queuedPlayers);
-    if (queuedPlayers[0]) {
-      console.log("queuedPlayers found", queuedPlayers);
-      player = queuedPlayers.shift()!;
+    const opponentPlayerId = queuedPlayers.shift();
+    if (opponentPlayerId) {
       const gameId = await createNewGame();
-      ee.emit(`joinLobby-${player}`, { gameId, playerId: "player-1" });
+
+      // notify opponent player of created game
+      ee.emit(`joinLobby-${opponentPlayerId}`, {
+        gameId,
+        playerId: "player-1",
+      });
+
+      // notify player of created game
       yield { gameId, playerId: "player-2" };
     } else {
-      console.log("queuedPlayers not found", queuedPlayers);
-      player = Math.random().toString(36).substring(7);
-      queuedPlayers.push(player);
-      console.log("queuedPlayers after push", queuedPlayers);
+      // add player to queue
+      const playerId = Math.random().toString(36).substring(7);
+      queuedPlayers.push(playerId);
+
+      // wait for other player to join
       while (true) {
-        // listen for new events
-        for await (const [data] of on(ee, `joinLobby-${player}`, {
+        for await (const [data] of on(ee, `joinLobby-${playerId}`, {
           signal,
         })) {
+          // notify player of created game
           yield data as { gameId: string; playerId: string };
         }
       }
@@ -148,7 +153,7 @@ export const gameRouter = createTRPCRouter({
       });
     }
 
-    game.turn = game.turn === "player" ? "opponent" : "player";
+    // game.turn = game.turn === "player" ? "opponent" : "player";
     game.turnCount++;
 
     ee.emit(`updateGameState-${gameId}`, game);
