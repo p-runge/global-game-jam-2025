@@ -24,6 +24,10 @@ jobs:
 
       - name: Copy files to server
         run: |
+          # echo env vars
+          echo "SSH_USER: ${{ vars.SSH_USER }}"
+          echo "SSH_HOST: ${{ vars.SSH_HOST }}"
+          echo "APP_DIRECTORY: ${{ vars.APP_DIRECTORY }}"
           rsync -avz --delete ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.APP_DIRECTORY }}
 
       - name: Build and serve app
