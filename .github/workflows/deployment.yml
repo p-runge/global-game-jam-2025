@@ -23,11 +23,11 @@ jobs:
         run: |
           ssh-keyscan -H ${{ vars.SSH_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Copy files to server
-        run: |
-          echo "pre rsync"
-          rsync -avz --delete . ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.APP_DIRECTORY }}
-          echo "post rsync"
+      # - name: Copy files to server
+      #   run: |
+      #     echo "pre rsync"
+      #     rsync -avz --delete . ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.APP_DIRECTORY }}
+      #     echo "post rsync"
 
       - name: Build and serve app
         uses: appleboy/ssh-action@master
