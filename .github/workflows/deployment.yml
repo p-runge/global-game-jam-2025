@@ -25,14 +25,15 @@ jobs:
 
       - name: Copy files to server
         run: |
-          echo "echo path"
-          echo $PATH
+          echo "pre rsync"
           rsync -avz --delete . ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.APP_DIRECTORY }}
+          echo "post rsync"
 
       - name: Build and serve app
         uses: appleboy/ssh-action@master
         with:
           script: |
+            echo "build and serve"
             ssh -o StrictHostKeyChecking=no ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} << 'EOF'
             cd ${{ vars.APP_DIRECTORY }}
 
