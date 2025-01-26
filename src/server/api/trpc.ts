@@ -46,6 +46,8 @@ const createInnerTRPCContext = (_opts: CreateContextOptions) => {
  * @see https://trpc.io/docs/context
  */
 export const createTRPCContext = (_opts: CreateNextContextOptions) => {
+  // TODO: read game id from cookies
+  console.log("cookies", _opts.req.cookies);
   return createInnerTRPCContext({});
 };
 

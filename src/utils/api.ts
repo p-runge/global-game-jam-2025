@@ -4,7 +4,12 @@
  *
  * We also create a few inference helpers for input and output types.
  */
-import { httpBatchLink, loggerLink } from "@trpc/client";
+import {
+  httpBatchLink,
+  loggerLink,
+  splitLink,
+  unstable_httpSubscriptionLink,
+} from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
 import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
 import superjson from "superjson";
@@ -31,6 +36,18 @@ export const api = createTRPCNext<AppRouter>({
           enabled: (opts) =>
             process.env.NODE_ENV === "development" ||
             (opts.direction === "down" && opts.result instanceof Error),
+        }),
+        splitLink({
+          // uses the httpSubscriptionLink for subscriptions
+          condition: (op) => op.type === "subscription",
+          true: unstable_httpSubscriptionLink({
+            url: `/api/trpc`,
+            transformer: superjson,
+          }),
+          false: httpBatchLink({
+            url: `/api/trpc`,
+            transformer: superjson,
+          }),
         }),
         httpBatchLink({
           /**

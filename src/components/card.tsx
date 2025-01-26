@@ -1,4 +1,4 @@
-import type { Card, Monster } from "~/types/models";
+import type { Card, Monster } from "~/server/types/models";
 
 export function Card({ card, hidden }: { card: Card; hidden: boolean }) {
   if (hidden) {

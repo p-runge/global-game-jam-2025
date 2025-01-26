@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { MonsterCoreSchema } from "~/types/models";
+import { MonsterCoreSchema } from "~/server/types/models";
 
 export const cardRouter = createTRPCRouter({
   getAllMonsters: publicProcedure
