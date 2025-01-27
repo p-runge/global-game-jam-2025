@@ -86,7 +86,7 @@ export default function Game() {
             <div className="absolute -top-[305px] left-[570px] -translate-x-1/2">
               <div className="h-card w-card bg-blue-300/50 text-white">
                 {cardLocations["opponent-discard-pile"].map((card) => (
-                  <div key={card.id}>
+                  <div className="absolute" key={card.id}>
                     <Card card={card} hidden={false}></Card>
                   </div>
                 ))}
@@ -190,7 +190,7 @@ export default function Game() {
             <div className="absolute -bottom-[305px] right-[570px] translate-x-1/2">
               <div className="h-card w-card bg-blue-300/50 text-white">
                 {cardLocations["player-discard-pile"].map((card) => (
-                  <div key={card.id}>
+                  <div className="absolute" key={card.id}>
                     <Card card={card} hidden={false}></Card>
                   </div>
                 ))}
@@ -219,7 +219,7 @@ export default function Game() {
               End Turn
             </button>
           )}
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2">
+          <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 scale-150 hover:bottom-20">
             <div className="pointer-events-none flex">
               {cardLocations["player-hand"].map((card) => (
                 <div
