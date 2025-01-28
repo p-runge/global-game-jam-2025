@@ -29,7 +29,7 @@ export function Frame({ children }: { children: React.ReactNode }) {
         ref={ref}
         className="aspect-[16/9] h-[1080px] w-[1920px] bg-gray-200"
       >
-        {children}
+        <div className="h-full overflow-hidden">{children}</div>
       </div>
     </div>
   );
