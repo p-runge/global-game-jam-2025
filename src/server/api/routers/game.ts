@@ -7,7 +7,12 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 import { db } from "~/server/db";
-import { initMonster, type Card } from "~/server/types/models";
+import {
+  initMonster,
+  type MonsterCore,
+  type Spell,
+  type Card,
+} from "~/server/types/models";
 
 type CardLocation =
   | "player-1-deck"
@@ -33,18 +38,31 @@ async function createNewGame() {
   const id = Math.random().toString(36).substring(7);
 
   const allMonsters = await db.monster.findMany();
+  const allSpells = await db.spell.findMany();
 
-  const allCards: Card[] = allMonsters.map((monster) =>
-    initMonster({
-      id: monster.id,
-      name: monster.name,
-      image: monster.image,
-      type: "monster",
-      cost: monster.cost,
-      size: monster.size,
-      stability: monster.stability,
-    }),
-  );
+  const allCards: Card[] = [
+    ...allMonsters.map((monster) =>
+      initMonster({
+        id: monster.id,
+        name: monster.name,
+        image: monster.image,
+        type: "monster",
+        cost: monster.cost,
+        size: monster.size,
+        stability: monster.stability,
+      } satisfies MonsterCore),
+    ),
+    ...allSpells.map(
+      (spell) =>
+        ({
+          id: spell.id,
+          name: spell.name,
+          image: spell.image,
+          type: "spell",
+          damage: spell.damage,
+        }) satisfies Spell,
+    ),
+  ];
 
   // somehow save the game state
   const game: GameState = {

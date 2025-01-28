@@ -42,7 +42,7 @@ export function initMonster(monster: MonsterCore) {
  */
 export const SpellSchema = CardBaseSchema.extend({
   type: z.literal("spell"),
-  effect: z.string(),
+  damage: z.number().int(),
 });
 export type Spell = z.infer<typeof SpellSchema>;
 
