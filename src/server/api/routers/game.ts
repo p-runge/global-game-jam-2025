@@ -70,7 +70,7 @@ async function createNewGame() {
 type GameState = {
   activePlayer: "player-1" | "player-2";
   turnCount: number;
-  winner: "player-1" | "player-2"| null;
+  winner: "player-1" | "player-2" | null;
   cardLocations: CardLocationMap;
 };
 const gameStates: Record<string, GameState> = {};
@@ -145,9 +145,8 @@ export const gameRouter = createTRPCRouter({
       }
     }
   }),
-  
-  endTurn: gameProcedure
-  .mutation(async ({ ctx: { gameId, playerId } }) => {
+
+  endTurn: gameProcedure.mutation(async ({ ctx: { gameId, playerId } }) => {
     const game = gameStates[gameId];
     if (!game) {
       throw new TRPCError({
@@ -275,9 +274,9 @@ export const gameRouter = createTRPCRouter({
 
         card.currentSize = Math.max(currentSize, 0);
         card.currentStability = Math.max(currentStability, 0);
-        
+
         const isMonsterDefeated = card.currentStability <= 0;
-        if (card.currentSize >= 20 ) {
+        if (card.currentSize >= 20) {
           game.winner = game.activePlayer;
         }
         let updatedGame = game;
