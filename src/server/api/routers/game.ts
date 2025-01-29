@@ -13,6 +13,7 @@ import {
   type Spell,
   type Card,
 } from "~/server/types/models";
+import { getKeys } from "~/utils/common";
 
 type CardLocation =
   | "player-1-deck"
@@ -226,7 +227,7 @@ export const gameRouter = createTRPCRouter({
 
       const game = gameStates[gameId]!;
       if (!game) {
-        console.error("Game not found", gameId, Object.keys(gameStates));
+        console.error("Game not found", gameId, getKeys(gameStates));
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Game not found",
@@ -244,8 +245,8 @@ export const gameRouter = createTRPCRouter({
     .input(
       z.object({
         cardId: z.string(),
-        currentSize: z.number(),
-        currentStability: z.number(),
+        currentSize: z.number().optional(),
+        currentStability: z.number().optional(),
       }),
     )
     .mutation(
@@ -261,9 +262,7 @@ export const gameRouter = createTRPCRouter({
           });
         }
 
-        const location = (
-          Object.keys(game.cardLocations) as CardLocation[]
-        ).find((loc) =>
+        const location = getKeys(game.cardLocations).find((loc) =>
           game.cardLocations[loc].some((card) => card.id === cardId),
         );
         if (!location) {
@@ -290,8 +289,12 @@ export const gameRouter = createTRPCRouter({
           });
         }
 
-        card.currentSize = Math.max(currentSize, 0);
-        card.currentStability = Math.max(currentStability, 0);
+        if (currentSize !== undefined) {
+          card.currentSize = Math.max(currentSize, 0);
+        }
+        if (currentStability !== undefined) {
+          card.currentStability = Math.max(currentStability, 0);
+        }
 
         const isMonsterDefeated = card.currentStability <= 0;
         if (card.currentSize >= 20) {
@@ -324,8 +327,8 @@ function moveCard({
   cardId: string;
   to: CardLocation;
 }) {
-  const location = (Object.keys(game.cardLocations) as CardLocation[]).find(
-    (loc) => game.cardLocations[loc].some((card) => card.id === cardId),
+  const location = getKeys(game.cardLocations).find((loc) =>
+    game.cardLocations[loc].some((card) => card.id === cardId),
   );
   if (!location) {
     throw new TRPCError({

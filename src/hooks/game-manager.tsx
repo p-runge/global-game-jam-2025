@@ -1,7 +1,8 @@
 import { useRouter } from "next/router";
-import { createContext, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import { type Card, type Monster } from "~/server/types/models";
 import { api } from "~/utils/api";
+import { getKeys } from "~/utils/common";
 
 type CardLocation =
   | "player-deck"
@@ -22,10 +23,12 @@ type GameManager = {
   moveCard: (data: { cardId: string; to: CardLocation }) => void;
   updateMonster: (data: {
     cardId: string;
-    currentSize: Monster["currentSize"];
-    currentStability: Monster["currentStability"];
+    currentSize?: Monster["currentSize"];
+    currentStability?: Monster["currentStability"];
   }) => void;
   winner: "player" | "opponent" | null;
+  getCardById: (cardId: string) => Card | null;
+  getCardLocation: (cardId: string) => CardLocation | null;
 };
 const GameManagerContext = createContext<GameManager | undefined>(undefined);
 
@@ -109,6 +112,30 @@ export function GameManagerProvider({
     },
   );
 
+  const getCardById = useCallback(
+    (cardId: string) => {
+      if (!cardLocations) return null;
+      return (
+        Object.values(cardLocations)
+          .flatMap((cards) => cards)
+          .find((card) => card.id === cardId) ?? null
+      );
+    },
+    [cardLocations],
+  );
+
+  const getCardLocation = useCallback(
+    (cardId: string) => {
+      if (!cardLocations) return null;
+      return (
+        getKeys(cardLocations).find((location) =>
+          cardLocations[location].some((card) => card.id === cardId),
+        ) ?? null
+      );
+    },
+    [cardLocations],
+  );
+
   const { mutate: moveCard } = api.game.moveCard.useMutation();
   const { mutate: updateMonster } = api.game.updateMonster.useMutation();
 
@@ -134,6 +161,8 @@ export function GameManagerProvider({
           : data.winner === playerId
             ? "player"
             : "opponent",
+        getCardById,
+        getCardLocation,
       }}
     >
       {children}
