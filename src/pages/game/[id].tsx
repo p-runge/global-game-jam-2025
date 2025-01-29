@@ -151,31 +151,25 @@ export default function Game() {
                   <div className="flex h-card w-[940px] gap-[10px] bg-blue-300/50">
                     {cardLocations["player-board"].map((card) => (
                       <div key={card.id}>
-                        {(() => {
-                          const content = (
+                        {turn === "player" ? (
+                          <Draggable
+                            id={card.id}
+                            droppableIds={cardLocations["opponent-board"]
+                              .filter(
+                                (c) =>
+                                  card.type === "monster" &&
+                                  c.type === "monster" &&
+                                  c.currentSize < card.currentSize,
+                              )
+                              .map(
+                                (c) => `opponent-card-${c.id}` as DroppableId,
+                              )}
+                          >
                             <Card card={card} hidden={false}></Card>
-                          );
-
-                          return turn === "player" ? (
-                            <Draggable
-                              id={card.id}
-                              droppableIds={cardLocations["opponent-board"]
-                                .filter(
-                                  (c) =>
-                                    card.type === "monster" &&
-                                    c.type === "monster" &&
-                                    c.currentSize < card.currentSize,
-                                )
-                                .map(
-                                  (c) => `opponent-card-${c.id}` as DroppableId,
-                                )}
-                            >
-                              {content}
-                            </Draggable>
-                          ) : (
-                            <>{content}</>
-                          );
-                        })()}
+                          </Draggable>
+                        ) : (
+                          <Card card={card} hidden={false}></Card>
+                        )}
                       </div>
                     ))}
                   </div>
