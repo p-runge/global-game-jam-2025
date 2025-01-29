@@ -1,8 +1,7 @@
 import { useCallback, useState } from "react";
 import type { TDraggable } from "~/components/draggable";
+import type { DroppableId } from "~/components/droppable";
 import { useGameManager } from "./game-manager";
-
-export type DroppableId = "player-board" | `opponent-card-${string}`;
 
 export const useDraggingManager = () => {
   const [draggable, setDraggableId] = useState<TDraggable | null>(null);

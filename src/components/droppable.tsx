@@ -1,8 +1,8 @@
 import { useDroppable } from "@dnd-kit/core";
 import React from "react";
-import type { DroppableId } from "~/hooks/dragging-manager";
 import { cn } from "~/utils/cn";
 
+export type DroppableId = "player-board" | `opponent-card-${string}`;
 type Props = {
   id: DroppableId;
   children: React.ReactNode;

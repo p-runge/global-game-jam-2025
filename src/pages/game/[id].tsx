@@ -6,9 +6,9 @@ import {
 import Head from "next/head";
 import { Card } from "~/components/card";
 import Draggable from "~/components/draggable";
-import Droppable from "~/components/droppable";
+import Droppable, { type DroppableId } from "~/components/droppable";
 import { Frame } from "~/components/frame";
-import { useDraggingManager, type DroppableId } from "~/hooks/dragging-manager";
+import { useDraggingManager } from "~/hooks/dragging-manager";
 import { useGameManager } from "~/hooks/game-manager";
 import { api } from "~/utils/api";
 import { cn } from "~/utils/cn";
