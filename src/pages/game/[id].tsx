@@ -199,13 +199,10 @@ export default function Game() {
           </div>
 
           {/* hands */}
-          <div className="absolute left-1/2 top-0 -translate-x-1/2">
+          <div className="absolute -top-48 left-1/2 -translate-x-1/2">
             <div className="pointer-events-none flex">
               {cardLocations["opponent-hand"].map((card) => (
-                <div
-                  key={card.id}
-                  className="pointer-events-auto origin-top scale-50"
-                >
+                <div key={card.id} className="pointer-events-auto origin-top">
                   <Card card={card} hidden></Card>
                 </div>
               ))}
