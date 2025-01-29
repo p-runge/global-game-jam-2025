@@ -1,4 +1,5 @@
 import type { Card, Monster, Spell } from "~/server/types/models";
+import { cn } from "~/utils/cn";
 
 export function Card({ card, hidden }: { card: Card; hidden: boolean }) {
   if (hidden) {
@@ -27,8 +28,13 @@ function SpellCard({ card }: { card: Spell }) {
       <div className="mb-2 text-xl font-bold tracking-tight">{card.name}</div>
 
       <div className="flex items-center justify-center">
-        <div className="flex h-20 w-20 items-center justify-center rounded-full border bg-[url('/bubble-plain.jpg')] bg-cover p-2 text-center text-[80px] font-normal leading-none">
-          {card.damage}
+        <div
+          className={cn(
+            "flex h-20 w-20 items-center justify-center rounded-full border bg-cover p-2 text-center text-[80px] font-normal leading-none",
+            card.damage > 0 ? "bg-red-500" : "bg-green-500",
+          )}
+        >
+          {Math.abs(card.damage)}
         </div>
       </div>
     </div>
