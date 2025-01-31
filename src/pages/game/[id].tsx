@@ -61,6 +61,8 @@ export default function Game() {
     const { active } = event;
     if (!active) return;
 
+    // TODO: don't allow dragging cards if the conditions are not met. create a layer for that
+
     startDragging(active.id);
   }
 
@@ -71,6 +73,14 @@ export default function Game() {
     if (!draggedCard) return false;
 
     const cardLocation = getCardLocation(cardId);
+    console.log(
+      "canDragTo",
+      draggedCard,
+      cardLocation,
+      targetArea,
+      isDroppableMonsterOpponent.test(targetArea),
+      isDroppableMonsterPlayer.test(targetArea),
+    );
     if (
       cardLocation === "player-hand" &&
       draggedCard.type === "monster" &&

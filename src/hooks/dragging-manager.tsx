@@ -35,23 +35,28 @@ export const useDraggingManager = () => {
       if (from === to) return;
 
       console.log("move draggable", cardId, "from", from, "to", to);
-      if (to === "player-board") {
+      if (from === "player-hand" && to === "player-board") {
+        // play card
         moveCard({ cardId, to: "player-board" });
       } else if (
         card.type === "spell" &&
         from === "player-hand" &&
-        to.startsWith("monster-opponent-")
+        (to.startsWith("monster-opponent-") || to.startsWith("monster-player-"))
       ) {
         // trigger spell
-        const targetCardId = to.replace("monster-opponent-", "");
-        const target = cardLocations["opponent-board"]
-          .filter((c) => c.type === "monster")
-          .find((c) => c.id === targetCardId);
-        if (!target) return;
+        const targetCardId = to
+          .replace("monster-opponent-", "")
+          .replace("monster-player-", "");
+        const target = getCardById(targetCardId);
+        if (!target || target.type !== "monster") return;
 
         updateMonster({
           cardId: target.id,
           currentSize: target.currentSize - card.damage,
+        });
+        moveCard({
+          cardId,
+          to: "player-discard-pile",
         });
       } else if (
         card.type === "monster" &&

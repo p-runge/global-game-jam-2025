@@ -7,8 +7,8 @@ export type DroppableId =
   | `monster-player-${string}`
   | `monster-opponent-${string}`;
 
-export const isDroppableMonsterPlayer = /^monster-player-{.*}$/;
-export const isDroppableMonsterOpponent = /^monster-opponent-{.*}$/;
+export const isDroppableMonsterPlayer = /^monster-player-.+$/;
+export const isDroppableMonsterOpponent = /^monster-opponent-.+$/;
 
 type Props = {
   id: DroppableId;
