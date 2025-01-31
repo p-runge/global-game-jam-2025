@@ -28,7 +28,7 @@ function SpellCard({ card }: { card: Spell }) {
 
       <div className="flex items-center justify-center">
         <div className="flex h-20 w-20 items-center justify-center rounded-full border bg-[url('/bubble-plain.jpg')] bg-cover p-2 text-center text-[80px] font-normal leading-none">
-          {card.effect}
+          {card.damage}
         </div>
       </div>
     </div>
