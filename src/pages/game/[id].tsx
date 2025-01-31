@@ -6,60 +6,105 @@ import {
 import Head from "next/head";
 import { Card } from "~/components/card";
 import Draggable from "~/components/draggable";
-import Droppable, { type DroppableId } from "~/components/droppable";
+import Droppable, {
+  isDroppableMonsterOpponent,
+  isDroppableMonsterPlayer,
+  type DroppableId,
+} from "~/components/droppable";
 import { Frame } from "~/components/frame";
 import { useDraggingManager } from "~/hooks/dragging-manager";
 import { useGameManager } from "~/hooks/game-manager";
+import type { Card as TCard } from "~/server/types/models";
 import { api } from "~/utils/api";
 import { cn } from "~/utils/cn";
 
+declare module "@dnd-kit/core" {
+  export interface DragStartEvent {
+    active: { id: string; data: { current: TCard } } | null;
+  }
+
+  export interface DragEndEvent {
+    active: { id: string; data: { current: TCard } };
+    over: { id: DroppableId } | null;
+  }
+}
+
 export default function Game() {
-  const { turn, turnCount, cardLocations, moveCard, winner } = useGameManager();
-  const { startDragging, moveItem, draggable } = useDraggingManager();
+  const {
+    turn,
+    turnCount,
+    cardLocations,
+    moveCard,
+    winner,
+    getCardLocation,
+    getCardById,
+  } = useGameManager();
+  const { startDragging, stopDragging, moveItem, draggableId } =
+    useDraggingManager();
+  const isDraggingSpellFromHand =
+    draggableId !== null &&
+    getCardById(draggableId)?.type === "spell" &&
+    getCardLocation(draggableId) === "player-hand";
+  const isDraggingMonsterFromBoard =
+    draggableId !== null &&
+    getCardById(draggableId)?.type === "monster" &&
+    getCardLocation(draggableId) === "player-board";
+  const isDraggingMonsterFromHand =
+    draggableId !== null &&
+    getCardById(draggableId)?.type === "monster" &&
+    getCardLocation(draggableId) === "player-hand";
 
   function handleDragStart(event: DragStartEvent) {
     const { active } = event;
+    if (!active) return;
 
-    if (!active?.id || !active.data.current) return;
-
-    const droppableIds = active.data.current.droppableIds as DroppableId[];
-
-    const allCardsInGame = Object.values(cardLocations).reduce(
-      (acc, cards) => [...acc, ...cards],
-      [],
-    );
-
-    const draggingCard = allCardsInGame.find((card) => card.id === active.id);
-    if (!draggingCard) return;
-
-    startDragging({
-      id: draggingCard.id,
-      droppableIds,
-    });
+    startDragging(active.id);
   }
 
-  const { mutate } = api.game.endTurn.useMutation();
+  const { mutate: endTurn } = api.game.endTurn.useMutation();
 
-  function endTurn() {
-    mutate();
-  }
+  const canDragTo = (cardId: string, targetArea: DroppableId) => {
+    const draggedCard = getCardById(cardId);
+    if (!draggedCard) return false;
+
+    const cardLocation = getCardLocation(cardId);
+    if (
+      cardLocation === "player-hand" &&
+      draggedCard.type === "monster" &&
+      targetArea === "player-board"
+    ) {
+      // play monster from hand to board
+      return true;
+    } else if (
+      cardLocation === "player-hand" &&
+      draggedCard.type === "spell" &&
+      (isDroppableMonsterOpponent.test(targetArea) ||
+        isDroppableMonsterPlayer.test(targetArea))
+    ) {
+      // target spell to player's or opponent's monster
+      return true;
+    } else if (
+      cardLocation === "player-board" &&
+      draggedCard.type === "monster" &&
+      isDroppableMonsterOpponent.test(targetArea)
+    ) {
+      // attack opponent's monster
+      return true;
+    }
+
+    return false;
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
+    stopDragging();
     const { active, over } = event;
-    startDragging(null);
+    if (!over) return;
 
-    if (!over?.id) return;
+    const draggedCard = getCardById(active.id);
+    if (!draggedCard) return;
 
-    if (typeof active?.id !== "string") {
-      console.error("Active id is not a string");
-      return;
-    }
-    if (typeof over?.id !== "string") {
-      console.error("Over id is not a string");
-      return;
-    }
-
-    if (over) {
-      moveItem(active.id, over.id as DroppableId);
+    if (canDragTo(active.id, over.id)) {
+      moveItem(active.id, over.id);
     }
   };
 
@@ -97,15 +142,14 @@ export default function Game() {
               <div className="flex h-card w-[940px] gap-[10px] bg-blue-300/50">
                 {cardLocations["opponent-board"].map((card) => (
                   <div key={card.id}>
-                    {draggable?.droppableIds.find(
-                      (id) => id === `opponent-card-${card.id}`,
-                    ) ? (
-                      <Droppable id={`opponent-card-${card.id}`}>
-                        <Card card={card} hidden={false}></Card>
-                      </Droppable>
-                    ) : (
+                    <Droppable
+                      id={`monster-opponent-${card.id}`}
+                      enabled={
+                        isDraggingSpellFromHand || isDraggingMonsterFromBoard
+                      }
+                    >
                       <Card card={card} hidden={false}></Card>
-                    )}
+                    </Droppable>
                   </div>
                 ))}
               </div>
@@ -146,40 +190,35 @@ export default function Game() {
             </div>
 
             <div className="absolute -bottom-[305px] -translate-x-1/2">
-              {(() => {
-                const content = (
-                  <div className="flex h-card w-[940px] gap-[10px] bg-blue-300/50">
-                    {cardLocations["player-board"].map((card) => (
-                      <div key={card.id}>
-                        {turn === "player" ? (
-                          <Draggable
-                            id={card.id}
-                            droppableIds={cardLocations["opponent-board"]
-                              .filter(
-                                (c) =>
-                                  card.type === "monster" &&
-                                  c.type === "monster" &&
-                                  c.currentSize < card.currentSize,
-                              )
-                              .map(
-                                (c) => `opponent-card-${c.id}` as DroppableId,
-                              )}
-                          >
-                            <Card card={card} hidden={false}></Card>
-                          </Draggable>
-                        ) : (
+              <Droppable id="player-board" enabled={isDraggingMonsterFromHand}>
+                <div className="flex h-card w-[940px] gap-[10px] bg-blue-300/50">
+                  {cardLocations["player-board"].map((card) => (
+                    <div key={card.id}>
+                      <Droppable
+                        id={`monster-player-${card.id}`}
+                        enabled={isDraggingSpellFromHand}
+                      >
+                        <Draggable
+                          id={card.id}
+                          enabled={turn === "player"}
+                          droppableIds={cardLocations["opponent-board"]
+                            .filter(
+                              (c) =>
+                                card.type === "monster" &&
+                                c.type === "monster" &&
+                                c.currentSize < card.currentSize,
+                            )
+                            .map(
+                              (c) => `monster-opponent-${c.id}` as DroppableId,
+                            )}
+                        >
                           <Card card={card} hidden={false}></Card>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                );
-                return draggable?.droppableIds.includes("player-board") ? (
-                  <Droppable id="player-board">{content}</Droppable>
-                ) : (
-                  <>{content}</>
-                );
-              })()}
+                        </Draggable>
+                      </Droppable>
+                    </div>
+                  ))}
+                </div>
+              </Droppable>
             </div>
             <div className="absolute -bottom-[305px] right-[570px] translate-x-1/2">
               <div className="h-card w-card bg-blue-300/50 text-white">
@@ -217,23 +256,17 @@ export default function Game() {
                   key={card.id}
                   className="pointer-events-auto -mx-[45px] origin-bottom scale-50 transition-transform hover:z-10 hover:scale-100"
                 >
-                  {(() => {
-                    const content = <Card card={card} hidden={false}></Card>;
-                    return turn === "player" ? (
-                      <Draggable
-                        id={card.id}
-                        droppableIds={
-                          cardLocations["player-board"].length < 5
-                            ? ["player-board"]
-                            : []
-                        }
-                      >
-                        {content}
-                      </Draggable>
-                    ) : (
-                      <>{content}</>
-                    );
-                  })()}
+                  <Draggable
+                    id={card.id}
+                    enabled={turn === "player"}
+                    droppableIds={
+                      cardLocations["player-board"].length < 5
+                        ? ["player-board"]
+                        : []
+                    }
+                  >
+                    <Card card={card} hidden={false}></Card>
+                  </Draggable>
                 </div>
               ))}
             </div>

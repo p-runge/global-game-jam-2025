@@ -1,10 +1,20 @@
 import { useCallback, useState } from "react";
-import type { TDraggable } from "~/components/draggable";
 import type { DroppableId } from "~/components/droppable";
 import { useGameManager } from "./game-manager";
 
+declare module "@dnd-kit/core" {
+  export interface DragStartEvent {
+    active: { id: string; data: { current: Card } } | null;
+  }
+
+  export interface DragEndEvent {
+    active: { id: string; data: { current: Card } };
+    over: { id: DroppableId } | null;
+  }
+}
+
 export const useDraggingManager = () => {
-  const [draggable, setDraggableId] = useState<TDraggable | null>(null);
+  const [draggableId, setDraggableId] = useState<string | null>(null);
 
   const {
     cardLocations,
@@ -30,10 +40,10 @@ export const useDraggingManager = () => {
       } else if (
         card.type === "spell" &&
         from === "player-hand" &&
-        to.startsWith("opponent-card-")
+        to.startsWith("monster-opponent-")
       ) {
         // trigger spell
-        const targetCardId = to.replace("opponent-card-", "");
+        const targetCardId = to.replace("monster-opponent-", "");
         const target = cardLocations["opponent-board"]
           .filter((c) => c.type === "monster")
           .find((c) => c.id === targetCardId);
@@ -46,10 +56,10 @@ export const useDraggingManager = () => {
       } else if (
         card.type === "monster" &&
         from === "player-board" &&
-        to.startsWith("opponent-card-")
+        to.startsWith("monster-opponent-")
       ) {
         // trigger attack
-        const defenderCardId = to.replace("opponent-card-", "");
+        const defenderCardId = to.replace("monster-opponent-", "");
         const defender = cardLocations["opponent-board"].find(
           (c) => c.id === defenderCardId,
         );
@@ -73,11 +83,34 @@ export const useDraggingManager = () => {
     [cardLocations, getCardById, getCardLocation, moveCard, updateMonster],
   );
 
-  const startDragging = useCallback((draggable: TDraggable | null) => {
-    setDraggableId(draggable);
+  const startDragging = useCallback((draggableId: string) => {
+    setDraggableId(draggableId);
+  }, []);
+  const stopDragging = useCallback(() => {
+    setDraggableId(null);
   }, []);
 
-  const droppables = draggable?.droppableIds ?? [];
+  return { startDragging, stopDragging, moveItem, draggableId };
+};
 
-  return { droppables, startDragging, moveItem, draggable };
+import { useDndContext, type DragEndEvent } from "@dnd-kit/core";
+import type { Card } from "~/server/types/models";
+
+export const useDndBehavior = (onDragEnd: (event: DragEndEvent) => void) => {
+  const { active, over } = useDndContext();
+
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      if (!over) return;
+      onDragEnd(event);
+    },
+    [onDragEnd, over],
+  );
+
+  return {
+    handleDragEnd,
+    isDragging: !!active,
+    draggedId: active?.id,
+    overId: over?.id,
+  };
 };

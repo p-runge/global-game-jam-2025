@@ -5,18 +5,16 @@ import type { DroppableId } from "./droppable";
 
 export type TDraggable = {
   id: string;
+  enabled: boolean;
   droppableIds: DroppableId[];
 };
 type Props = TDraggable & {
   children: React.ReactNode;
 };
-export default function Draggable({ id, droppableIds, children }: Props) {
+export default function Draggable({ id, enabled, children }: Props) {
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
       id,
-      data: {
-        droppableIds,
-      },
     });
 
   return (
@@ -32,7 +30,8 @@ export default function Draggable({ id, droppableIds, children }: Props) {
       {...listeners} // Only add listeners if draggable
       {...attributes}
       className={cn(
-        isDragging ? "cursor-grabbing" : "hover:glow-green cursor-grab",
+        enabled &&
+          (isDragging ? "cursor-grabbing" : "hover:glow-green cursor-grab"),
       )}
     >
       {children}
