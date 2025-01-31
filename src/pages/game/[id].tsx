@@ -53,6 +53,9 @@ export default function Game() {
     draggableId !== null &&
     getCardById(draggableId)?.type === "monster" &&
     getCardLocation(draggableId) === "player-hand";
+  const hasSpellTarget =
+    cardLocations["player-board"].length > 0 ||
+    cardLocations["opponent-board"].length > 0;
 
   function handleDragStart(event: DragStartEvent) {
     const { active } = event;
@@ -254,11 +257,16 @@ export default function Game() {
               {cardLocations["player-hand"].map((card) => (
                 <div
                   key={card.id}
-                  className="pointer-events-auto -mx-[45px] origin-bottom scale-50 transition-transform hover:scale-100"
+                  className="pointer-events-auto -mx-[45px] origin-bottom scale-50 transition-transform hover:z-10 hover:scale-100"
                 >
                   <Draggable
                     id={card.id}
-                    enabled={turn === "player"}
+                    enabled={
+                      turn === "player" &&
+                      (getCardById(card.id)?.type === "monster" ||
+                        (hasSpellTarget &&
+                          getCardById(card.id)?.type === "spell"))
+                    }
                     droppableIds={
                       cardLocations["player-board"].length < 5
                         ? ["player-board"]
