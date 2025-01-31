@@ -30,8 +30,10 @@ export default function Draggable({ id, enabled, children }: Props) {
       {...listeners} // Only add listeners if draggable
       {...attributes}
       className={cn(
-        enabled &&
-          (isDragging ? "cursor-grabbing" : "hover:glow-green cursor-grab"),
+        isDragging
+          ? "scale-125 cursor-grabbing"
+          : enabled &&
+              "hover:glow-green cursor-grab hover:z-10 hover:scale-125",
       )}
     >
       {children}

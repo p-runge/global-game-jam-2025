@@ -24,7 +24,8 @@ export default function Droppable({ id, enabled, children }: Props) {
     <div
       ref={setNodeRef}
       className={cn(
-        enabled && (isOver ? "glow-green" : active && "glow-white"),
+        enabled &&
+          (isOver ? "glow-green z-10 scale-125" : active && "glow-white"),
       )}
     >
       {children}
