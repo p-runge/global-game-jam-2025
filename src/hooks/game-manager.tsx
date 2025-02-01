@@ -68,7 +68,7 @@ export function GameManagerProvider({
 
         if (playerId === undefined) {
           console.error("isPlayer1 is not set");
-          // return;
+          return;
         }
 
         // map server card locations to client ones based on isPlayer1
