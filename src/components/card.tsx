@@ -1,3 +1,6 @@
+// import { GiLiquidSoap } from "react-icons/gi";
+// import { GiSoap } from "react-icons/gi";
+import { TbRulerMeasure2 } from "react-icons/tb";
 import type { Card, Monster, Spell } from "~/server/types/models";
 import { cn } from "~/utils/cn";
 
@@ -27,15 +30,40 @@ function SpellCard({ card }: { card: Spell }) {
     >
       <div className="mb-2 text-xl font-bold tracking-tight">{card.name}</div>
 
-      <div className="flex items-center justify-center">
-        <div
-          className={cn(
-            "flex h-20 w-20 items-center justify-center rounded-full border bg-cover p-2 text-center text-[80px] font-normal leading-none",
-            card.damage > 0 ? "bg-red-500" : "bg-green-500",
-          )}
-        >
-          {Math.abs(card.damage)}
-        </div>
+      <div
+        className={cn(
+          "flex flex-col items-center gap-2 p-2",
+          card.damage > 0 ? "bg-red-500" : "bg-green-500",
+        )}
+      >
+        {/* render only stats with their value and regarding icons if they are not 0 */}
+        {card.damage !== 0 && (
+          <div className="flex w-full items-center justify-center">
+            <span className="text-6xl">
+              <TbRulerMeasure2 />
+            </span>
+            <span className="text-6xl">{`${card.damage > 0 ? "-" : "+"}${Math.abs(card.damage)}`}</span>
+          </div>
+        )}
+        {/*
+            // TODO: replace damage with size and stability as soon as they are implemented
+          */}
+        {/* {card.size !== 0 && (
+          <div className="flex w-full items-center justify-center">
+            <span className="text-6xl">
+              <MdOutlineHealthAndSafety />
+            </span>
+            <span className="text-6xl">{`${card.size > 0 ? "-" : "+"}${Math.abs(card.size)}`}</span>
+          </div>
+        )}
+        {card.stability !== 0 && (
+          <div className="flex w-full items-center justify-center">
+            <span className="text-6xl">
+              <MdOutlineHealthAndSafety />
+            </span>
+            <span className="text-6xl">{`${card.stability > 0 ? "-" : "+"}${Math.abs(card.stability)}`}</span>
+          </div>
+        )} */}
       </div>
     </div>
   );
