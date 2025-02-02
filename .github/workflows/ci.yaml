@@ -19,7 +19,9 @@ jobs:
         run: |
           echo ${{ vars.APP_NAME }} ${{ vars.SSH_HOST }} ${{ vars.SSH_USER }}
           touch test.txt
-          echo ${{ secrets.SSH_PRIVATE_KEY }} > test.txt
+          echo "file created"
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > test.txt
+          echo "file written"
           echo test.txt
 
       - name: Ping via ssh
