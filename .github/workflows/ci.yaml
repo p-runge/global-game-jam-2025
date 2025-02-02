@@ -49,7 +49,7 @@ jobs:
             --include="node_modules" \
             --include="node_modules/**" \
             --exclude="*" \
-             -e "ssh -i id_rsa" . ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:/srv/${{ vars.APP_NAME }}
+            -e "ssh -i id_rsa" . ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:/srv/${{ vars.APP_NAME }}
 
       # TODO: uncomment this block after resolving the issue with pm2 permissions
       # - name: Install dependencies on web server and deploy
