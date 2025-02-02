@@ -22,7 +22,8 @@ jobs:
           echo "file created"
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > test.txt
           echo "file written"
-          echo test.txt
+          # echo contents of the file
+          cat test.txt
 
       - name: Ping via ssh
         uses: appleboy/ssh-action@master
