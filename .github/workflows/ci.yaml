@@ -34,9 +34,6 @@ jobs:
           cat id_rsa
           echo "key copied"
 
-          ssh-keyscan -H ${{ vars.SSH_HOST }} >> ~/.ssh/known_hosts
-          echo "known hosts updated"
-
           rsync -avz --delete \
             --include="package.json" \
             --include="pnpm-lock.yaml" \
@@ -52,7 +49,7 @@ jobs:
             --include="node_modules" \
             --include="node_modules/**" \
             --exclude="*" \
-            -e "ssh -i id_rsa" . ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:/srv/${{ vars.APP_NAME }}
+            -e "ssh -o StrictHostKeyChecking=no -i id_rsa" . ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:/srv/${{ vars.APP_NAME }}
 
       # TODO: uncomment this block after resolving the issue with pm2 permissions
       # - name: Install dependencies on web server and deploy
