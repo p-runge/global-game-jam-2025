@@ -36,9 +36,13 @@ jobs:
 
       - name: connect with ssh vanilla
         run: |
-          touch id_rsa
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > id_rsa
-          ssh -i id_rsa ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "echo 'SSH connection successful'"
+          echo "connecting with ssh"
+          touch asdf
+          echo "file created"
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > asdf
+          echo "file written"
+          ssh -i asdf ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "echo 'within ssh connection'"
+          echo "ssh connection successful"
 
       # - name: Checkout code
       #   uses: actions/checkout@v2
