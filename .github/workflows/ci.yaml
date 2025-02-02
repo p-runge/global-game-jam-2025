@@ -32,18 +32,29 @@ jobs:
           ls -la .next
           ls -la public
 
-      - name: Copy files to web server only after all checks passed
-        uses: appleboy/scp-action@master
+      # - name: Copy files to web server only after all checks passed
+      #   uses: appleboy/scp-action@master
+      #   with:
+      #     host: ${{ vars.SSH_HOST }}
+      #     username: ${{ vars.SSH_USER }}
+      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
+      #     source: |
+      #       .next
+      #       public
+      #       package.json
+      #       pnpm-lock.yaml
+      #     target: "/srv/${{ vars.APP_NAME }}"
+
+      - name: Rsync files to web server only after all checks passed
+        uses: appleboy/rsync-action@master
         with:
+          args: -avz
+          src: .next public package.json pnpm-lock.yaml
+          exclude: .next/cache
           host: ${{ vars.SSH_HOST }}
           username: ${{ vars.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: |
-            .next
-            public
-            package.json
-            pnpm-lock.yaml
-          target: "/srv/${{ vars.APP_NAME }}"
+          dest: /srv/${{ vars.APP_NAME }}
 
       - name: Install dependencies on web server and deploy
         uses: appleboy/ssh-action@master
@@ -53,5 +64,5 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /srv/${{ vars.APP_NAME }}
-            pnpm install --frozen-lockfile
+            # pnpm install --frozen-lockfile
             pm2 restart ${{ vars.APP_NAME }}
