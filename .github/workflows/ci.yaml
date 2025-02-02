@@ -30,6 +30,7 @@ jobs:
         run: |
           # Create file with private key
           touch id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > id_rsa
           chmod 600 id_rsa
 
           rsync -avz --delete \
