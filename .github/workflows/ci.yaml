@@ -15,9 +15,6 @@ jobs:
       - name: just do anything
         run: echo "Hello, world!"
 
-      - name: Debug SSH Key
-        run: echo "${{ secrets.SSH_PRIVATE_KEY }}" | base64 --decode
-
       - name: log vars
         run: |
           echo ${{ vars.APP_NAME }} ${{ vars.SSH_HOST }} ${{ vars.SSH_USER }}
