@@ -31,6 +31,7 @@ jobs:
         run: |
           touch id_rsa
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > id_rsa
+          chmod 600 id_rsa
           cat id_rsa
           echo "key copied"
 
