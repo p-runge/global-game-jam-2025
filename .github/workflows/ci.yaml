@@ -2,11 +2,10 @@ on:
   push:
     branches:
       - main
-      # TODO: remove
-      - feat/*
   pull_request:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   ci-cd:
@@ -29,11 +28,9 @@ jobs:
 
       - name: Rsync files to web server only after all checks passed
         run: |
+          # Create file with private key
           touch id_rsa
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > id_rsa
           chmod 600 id_rsa
-          cat id_rsa
-          echo "key copied"
 
           rsync -avz --delete \
             --include="package.json" \
