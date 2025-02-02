@@ -12,80 +12,51 @@ jobs:
   ci-cd:
     runs-on: ubuntu-latest
     steps:
-      - name: just do anything
-        run: echo "Hello, world!"
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: log vars
-        run: |
-          echo ${{ vars.APP_NAME }} ${{ vars.SSH_HOST }} ${{ vars.SSH_USER }}
-          touch test.txt
-          echo "file created"
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > test.txt
-          echo "file written"
-          # echo contents of the file
-          cat test.txt
+      - name: Install dependencies
+        run: npm install -g pnpm && pnpm install
 
-      - name: add known hosts
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -t rsa ${{ vars.SSH_HOST }} >> ~/.ssh/known_hosts
+      - name: Typecheck
+        run: pnpm typecheck
 
-      - name: Ping via ssh
+      - name: Lint
+        run: pnpm lint
+
+      - name: Build
+        run: pnpm build
+
+      - name: Copy files to web server only after all checks passed
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ vars.SSH_HOST }}
+          username: ${{ vars.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: |
+            .next
+            public
+            package.json
+            pnpm-lock.yaml
+          target: "/srv/${{ vars.APP_NAME }}"
+
+      - name: Install dependencies on web server
         uses: appleboy/ssh-action@master
         with:
           host: ${{ vars.SSH_HOST }}
           username: ${{ vars.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          # password: ${{ secrets.SSH_PASSWORD }}
-
           script: |
-            echo "SSH connection successful"
+            cd /srv/${{ vars.APP_NAME }}
+            pnpm install --frozen-lockfile
 
-      # - name: connect with ssh vanilla
-      #   run: |
-      #     echo "connecting with ssh"
-      #     touch asdf
-      #     echo "file created"
-      #     echo "${{ secrets.SSH_PRIVATE_KEY }}" > asdf
-      #     echo "file written"
-      #     cat asdf
-      #     echo "write ssh command in variable"
-      #     ssh_command="ssh -i asdf ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} 'echo \"within ssh connection\"'"
-      #     echo "executing ssh command"
-      #     echo $ssh_command
-      #     echo "ssh connection successful"
-
-      # - name: Checkout code
-      #   uses: actions/checkout@v2
-
-      # - name: Install dependencies
-      #   run: npm install -g pnpm && pnpm install
-
-      # - name: Typecheck
-      #   run: pnpm typecheck
-
-      # - name: Lint
-      #   run: pnpm lint
-
-      # - name: Build
-      #   run: pnpm build
-
-      # - name: Copy files to web server only after all checks passed
-      #   uses: appleboy/scp-action@master
-      #   with:
-      #     host: ${{ vars.SSH_HOST }}
-      #     username: ${{ vars.SSH_USER }}
-      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-      #     source: ".next"
-      #     target: "/srv/${{ vars.APP_NAME }}"
-
-      # - name: Deploy
-      #   # Use the 'appleboy/ssh-action' action for SSH deployment
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ vars.SSH_HOST }}
-      #     username: ${{ vars.SSH_USER }}
-      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-      #     script: |
-      #       cd /srv/${{ vars.APP_NAME }}
-      #       pm2 restart ${{ vars.APP_NAME }}
+      - name: Deploy
+        # Use the 'appleboy/ssh-action' action for SSH deployment
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ vars.SSH_HOST }}
+          username: ${{ vars.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /srv/${{ vars.APP_NAME }}
+            pm2 restart ${{ vars.APP_NAME }}
