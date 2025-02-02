@@ -2,6 +2,8 @@ on:
   push:
     branches:
       - main
+      # TODO: remove
+      - feat/*
   pull_request:
     branches:
       - main
@@ -32,7 +34,7 @@ jobs:
           username: ${{ vars.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            rsync -avz --delete /srv/${{ vars.APP_NAME }}
+            rsync -avz --delete . ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:/srv/${{ vars.APP_NAME }}
 
       # TODO: uncomment this block after resolving the issue with pm2 permissions
       # - name: Install dependencies on web server and deploy
