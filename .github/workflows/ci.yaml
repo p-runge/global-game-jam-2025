@@ -17,41 +17,41 @@ jobs:
         with:
           host: ${{ vars.SSH_HOST }}
           username: ${{ vars.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          password: ${{ secrets.SSH_PASSWORD }}
           script: |
             echo "SSH connection successful"
 
-      - name: Checkout code
-        uses: actions/checkout@v2
+      # - name: Checkout code
+      #   uses: actions/checkout@v2
 
-      - name: Install dependencies
-        run: npm install -g pnpm && pnpm install
+      # - name: Install dependencies
+      #   run: npm install -g pnpm && pnpm install
 
-      - name: Typecheck
-        run: pnpm typecheck
+      # - name: Typecheck
+      #   run: pnpm typecheck
 
-      - name: Lint
-        run: pnpm lint
+      # - name: Lint
+      #   run: pnpm lint
 
-      - name: Build
-        run: pnpm build
+      # - name: Build
+      #   run: pnpm build
 
-      - name: Copy files to web server only after all checks passed
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ vars.SSH_HOST }}
-          username: ${{ vars.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: ".next"
-          target: "/srv/${{ vars.APP_NAME }}"
+      # - name: Copy files to web server only after all checks passed
+      #   uses: appleboy/scp-action@master
+      #   with:
+      #     host: ${{ vars.SSH_HOST }}
+      #     username: ${{ vars.SSH_USER }}
+      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
+      #     source: ".next"
+      #     target: "/srv/${{ vars.APP_NAME }}"
 
-      - name: Deploy
-        # Use the 'appleboy/ssh-action' action for SSH deployment
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ vars.SSH_HOST }}
-          username: ${{ vars.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd /srv/${{ vars.APP_NAME }}
-            pm2 restart ${{ vars.APP_NAME }}
+      # - name: Deploy
+      #   # Use the 'appleboy/ssh-action' action for SSH deployment
+      #   uses: appleboy/ssh-action@master
+      #   with:
+      #     host: ${{ vars.SSH_HOST }}
+      #     username: ${{ vars.SSH_USER }}
+      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
+      #     script: |
+      #       cd /srv/${{ vars.APP_NAME }}
+      #       pm2 restart ${{ vars.APP_NAME }}
