@@ -57,5 +57,6 @@ jobs:
           username: ${{ vars.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            npm install -g pm2
             cd /srv/${{ vars.APP_NAME }}
             pm2 restart ${{ vars.APP_NAME }}
