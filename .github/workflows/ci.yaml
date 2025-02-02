@@ -36,9 +36,9 @@ jobs:
 
       - name: connect with ssh vanilla
         run: |
-          touch ~/.ssh/id_rsa
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          ssh -i ~/.ssh/id_rsa ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "echo 'SSH connection successful'"
+          touch id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > id_rsa
+          ssh -i id_rsa ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "echo 'SSH connection successful'"
 
       # - name: Checkout code
       #   uses: actions/checkout@v2
