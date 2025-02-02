@@ -27,6 +27,11 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: List contents of directories
+        run: |
+          ls -la .next
+          ls -la public
+
       - name: Copy files to web server only after all checks passed
         uses: appleboy/scp-action@master
         with:
@@ -40,7 +45,7 @@ jobs:
             pnpm-lock.yaml
           target: "/srv/${{ vars.APP_NAME }}"
 
-      - name: Install dependencies on web server
+      - name: Install dependencies on web server and deploy
         uses: appleboy/ssh-action@master
         with:
           host: ${{ vars.SSH_HOST }}
@@ -49,14 +54,4 @@ jobs:
           script: |
             cd /srv/${{ vars.APP_NAME }}
             pnpm install --frozen-lockfile
-
-      - name: Deploy
-        # Use the 'appleboy/ssh-action' action for SSH deployment
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ vars.SSH_HOST }}
-          username: ${{ vars.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd /srv/${{ vars.APP_NAME }}
             pm2 restart ${{ vars.APP_NAME }}
