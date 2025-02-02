@@ -2,14 +2,12 @@ on:
   push:
     branches:
       - main
-      # TODO: remove this line after finishing feature
-      - feature/*
   pull_request:
     branches:
       - main
 
 jobs:
-  prepare:
+  ci-cd:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -19,43 +17,31 @@ jobs:
         run: npm install -g pnpm && pnpm install
 
       - name: Typecheck
-        run: pnpm run typecheck
+        run: pnpm typecheck
 
       - name: Lint
-        run: pnpm run lint
-
-  build:
-    runs-on: ubuntu-latest
-    needs: prepare
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Install dependencies
-        run: npm install -g pnpm && pnpm install
+        run: pnpm lint
 
       - name: Build
-        run: pnpm run build
+        run: pnpm build
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Install dependencies
-        run: npm install -g pnpm && pnpm install
-
-      - name: Copy files to web server
-        uses: appleboy/scp-action@master
+      - name: Rsync files to web server only after all checks passed
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ vars.SSH_HOST }}
           username: ${{ vars.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "dist"
-          target: "/srv/${{ vars.APP_NAME }}"
+          script: |
+            rsync -avz --delete /srv/${{ vars.APP_NAME }}
 
-      - name: Restart pm2 process
-        run: |
-          ssh ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} -i ${{ secrets.SSH_PRIVATE_KEY }} "pm2 restart ${{ vars.APP_NAME }}"
+      # TODO: uncomment this block after resolving the issue with pm2 permissions
+      # - name: Install dependencies on web server and deploy
+      #   uses: appleboy/ssh-action@master
+      #   with:
+      #     host: ${{ vars.SSH_HOST }}
+      #     username: ${{ vars.SSH_USER }}
+      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
+      #     script: |
+      #       cd /srv/${{ vars.APP_NAME }}
+      #       # pnpm install --frozen-lockfile
+      #       pm2 restart ${{ vars.APP_NAME }}
