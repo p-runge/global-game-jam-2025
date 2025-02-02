@@ -46,15 +46,14 @@ jobs:
       #     target: "/srv/${{ vars.APP_NAME }}"
 
       - name: Rsync files to web server only after all checks passed
-        uses: appleboy/rsync-action@master
+        uses: appleboy/ssh-action@master
         with:
-          args: -avz
-          src: .next public package.json pnpm-lock.yaml
-          exclude: .next/cache
           host: ${{ vars.SSH_HOST }}
           username: ${{ vars.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          dest: /srv/${{ vars.APP_NAME }}
+          script: |
+            rsync -avz --delete /srv/${{ vars.APP_NAME }}
+            # rsync -avz --delete --exclude='node_modules' /srv/${{ vars.APP_NAME }}
 
       - name: Install dependencies on web server and deploy
         uses: appleboy/ssh-action@master
