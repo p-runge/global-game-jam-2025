@@ -44,6 +44,11 @@ jobs:
       - name: connect with ssh vanilla
         run: |
           echo "connecting with ssh"
+          touch asdf
+          echo "file created"
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > asdf
+          echo "file written"
+          cat asdf
           echo "write ssh command in variable"
           ssh_command="ssh -i asdf ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} 'echo \"within ssh connection\"'"
           echo "executing ssh command"
