@@ -12,8 +12,15 @@ jobs:
   ci-cd:
     runs-on: ubuntu-latest
     steps:
+      - name: just do anything
+        run: echo "Hello, world!"
+
       - name: log vars
-        run: echo ${{ toJson(vars) }}
+        run: |
+          echo ${{ vars.APP_NAME }} ${{ vars.SSH_HOST }} ${{ vars.SSH_USER }}
+          touch test.txt
+          echo ${{ secrets.SSH_PRIVATE_KEY }} > test.txt
+          echo test.txt
 
       - name: Ping via ssh
         uses: appleboy/ssh-action@master
