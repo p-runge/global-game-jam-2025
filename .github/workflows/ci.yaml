@@ -30,27 +30,24 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -t rsa ${{ vars.SSH_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Ping via ssh
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ vars.SSH_HOST }}
-          username: ${{ vars.SSH_USER }}
-          # key: ${{ secrets.SSH_PRIVATE_KEY }}
-          password: ${{ secrets.SSH_PASSWORD }}
+      # - name: Ping via ssh
+      #   uses: appleboy/ssh-action@master
+      #   with:
+      #     host: ${{ vars.SSH_HOST }}
+      #     username: ${{ vars.SSH_USER }}
+      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
+      #     # password: ${{ secrets.SSH_PASSWORD }}
 
-          script: |
-            echo "SSH connection successful"
+      #     script: |
+      #       echo "SSH connection successful"
 
       - name: connect with ssh vanilla
         run: |
           echo "connecting with ssh"
-          touch asdf
-          echo "file created"
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > asdf
-          echo "file written"
-          cat asdf
-          echo "connecting with ssh"
-          ssh -i asdf ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "echo 'within ssh connection'"
+          echo "write ssh command in variable"
+          ssh_command="ssh -i asdf ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} 'echo \"within ssh connection\"'"
+          echo "executing ssh command"
+          echo $ssh_command
           echo "ssh connection successful"
 
       # - name: Checkout code
