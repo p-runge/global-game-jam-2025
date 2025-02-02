@@ -25,14 +25,14 @@ jobs:
           # echo contents of the file
           cat test.txt
 
-      # - name: Ping via ssh
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ vars.SSH_HOST }}
-      #     username: ${{ vars.SSH_USER }}
-      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-      #     script: |
-      #       echo "SSH connection successful"
+      - name: Ping via ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ vars.SSH_HOST }}
+          username: ${{ vars.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "SSH connection successful"
 
       - name: connect with ssh vanilla
         run: |
