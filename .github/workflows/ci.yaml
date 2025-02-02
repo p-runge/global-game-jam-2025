@@ -2,6 +2,8 @@ on:
   push:
     branches:
       - main
+      # TODO: remove
+      - feat/*
   pull_request:
     branches:
       - main
@@ -26,13 +28,29 @@ jobs:
         run: pnpm build
 
       - name: Rsync files to web server only after all checks passed
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ vars.SSH_HOST }}
-          username: ${{ vars.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            rsync -avz --delete /srv/${{ vars.APP_NAME }}
+        run: |
+          touch id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > id_rsa
+          chmod 600 id_rsa
+          cat id_rsa
+          echo "key copied"
+
+          rsync -avz --delete \
+            --include="package.json" \
+            --include="pnpm-lock.yaml" \
+            --include="next.config.js" \
+            --include=".next" \
+            --include=".next/**" \
+            --include="public" \
+            --include="public/**" \
+            --include="src" \
+            --include="src/env.js" \
+            --include="prisma" \
+            --include="prisma/dev.db" \
+            --include="node_modules" \
+            --include="node_modules/**" \
+            --exclude="*" \
+            -e "ssh -o StrictHostKeyChecking=no -i id_rsa" . ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:/srv/${{ vars.APP_NAME }}
 
       # TODO: uncomment this block after resolving the issue with pm2 permissions
       # - name: Install dependencies on web server and deploy
