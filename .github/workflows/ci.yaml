@@ -34,6 +34,9 @@ jobs:
           cat id_rsa
           echo "key copied"
 
+          ssh-keyscan -H ${{ vars.SSH_HOST }} >> ~/.ssh/known_hosts
+          echo "known hosts updated"
+
           rsync -avz --delete \
             --include="package.json" \
             --include="pnpm-lock.yaml" \
