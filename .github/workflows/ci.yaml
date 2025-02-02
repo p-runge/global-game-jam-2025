@@ -49,14 +49,12 @@ jobs:
             --exclude="*" \
             -e "ssh -o StrictHostKeyChecking=no -i id_rsa" . ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:/srv/${{ vars.APP_NAME }}
 
-      # TODO: uncomment this block after resolving the issue with pm2 permissions
-      # - name: Install dependencies on web server and deploy
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ vars.SSH_HOST }}
-      #     username: ${{ vars.SSH_USER }}
-      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-      #     script: |
-      #       cd /srv/${{ vars.APP_NAME }}
-      #       # pnpm install --frozen-lockfile
-      #       pm2 restart ${{ vars.APP_NAME }}
+      - name: Restart app
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ vars.SSH_HOST }}
+          username: ${{ vars.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /srv/${{ vars.APP_NAME }}
+            pm2 restart ${{ vars.APP_NAME }}
