@@ -12,6 +12,9 @@ jobs:
   ci-cd:
     runs-on: ubuntu-latest
     steps:
+      - name: log vars
+        run: echo ${{ toJson(vars) }}
+
       - name: Ping via ssh
         uses: appleboy/ssh-action@master
         with:
