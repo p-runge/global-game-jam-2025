@@ -2,8 +2,6 @@ on:
   push:
     branches:
       - main
-      # TODO: remove this line after finishing feature
-      - feat/*
   pull_request:
     branches:
       - main
@@ -26,11 +24,6 @@ jobs:
 
       - name: Build
         run: pnpm build
-
-      - name: List contents of directories
-        run: |
-          ls -la .next
-          ls -la public
 
       - name: Rsync files to web server only after all checks passed
         uses: appleboy/ssh-action@master
