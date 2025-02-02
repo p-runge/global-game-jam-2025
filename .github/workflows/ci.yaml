@@ -36,7 +36,7 @@ jobs:
 
       - name: connect with ssh vanilla
         run: |
-          ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "echo 'SSH connection successful'"
+          ssh -i ${{ secrets.SSH_PRIVATE_KEY }} ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "echo 'SSH connection successful'"
 
       # - name: Checkout code
       #   uses: actions/checkout@v2
