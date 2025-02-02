@@ -41,6 +41,8 @@ jobs:
           echo "file created"
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > asdf
           echo "file written"
+          cat asdf
+          echo "connecting with ssh"
           ssh -i asdf ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }} "echo 'within ssh connection'"
           echo "ssh connection successful"
 
