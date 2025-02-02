@@ -12,6 +12,15 @@ jobs:
   ci-cd:
     runs-on: ubuntu-latest
     steps:
+      - name: Ping via ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ vars.SSH_HOST }}
+          username: ${{ vars.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "SSH connection successful"
+
       - name: Checkout code
         uses: actions/checkout@v2
 
