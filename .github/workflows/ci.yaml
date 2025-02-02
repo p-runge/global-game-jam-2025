@@ -25,6 +25,11 @@ jobs:
           # echo contents of the file
           cat test.txt
 
+      - name: add known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -t rsa ${{ vars.SSH_HOST }} >> ~/.ssh/known_hosts
+
       - name: Ping via ssh
         uses: appleboy/ssh-action@master
         with:
