@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
+import { cn } from "~/utils/cn";
 
 export default function Home() {
   const router = useRouter();
@@ -17,17 +18,23 @@ export default function Home() {
   return (
     <div>
       <div className="flex h-screen items-center justify-center bg-gray-800">
-        <div className="flex flex-col rounded-lg bg-white p-4">
-          <h1 className="text-center text-2xl font-bold">Lobby</h1>
-          <div className="mt-4 flex flex-col">
-            <div className="flex items-center justify-between border-b p-2">
-              <button
-                className="rounded-lg bg-blue-500 px-2 py-1 text-white"
-                onClick={() => join()}
-              >
-                QuickPlay
-              </button>
-            </div>
+        <div
+          className="relative flex h-[500px] w-[500px] flex-col rounded-lg p-4"
+          style={{
+            backgroundImage: "url('/splash.jpeg')",
+            backgroundSize: "cover",
+          }}
+        >
+          <div className="absolute bottom-[50px] left-1/2 flex -translate-x-1/2 flex-col gap-2">
+            <button
+              className={cn(
+                "rounded-lg border border-white bg-amber-600 px-2 py-1 text-3xl font-bold text-white transition-colors",
+                "hover:bg-amber-800",
+              )}
+              onClick={() => join()}
+            >
+              QuickPlay
+            </button>
           </div>
         </div>
       </div>
