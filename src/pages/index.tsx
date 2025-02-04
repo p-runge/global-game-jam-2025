@@ -1,15 +1,9 @@
-import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import Link from "next/link";
+import { useEffect } from "react";
 import { Frame } from "~/components/frame";
 import { cn } from "~/utils/cn";
 
 export default function Home() {
-  const router = useRouter();
-  function join() {
-    console.log("join");
-    void router.push("/lobby");
-  }
-
   useEffect(() => {
     // clear cookies
     document.cookie = "gameId=";
@@ -27,15 +21,15 @@ export default function Home() {
           }}
         >
           <div className="absolute bottom-[10%] left-1/2 flex -translate-x-1/2 flex-col gap-2">
-            <button
+            <Link
+              href="/lobby"
               className={cn(
-                "from-yellow to-orange rounded-full border-[8px] border-black bg-gradient-to-b px-8 py-4 text-6xl font-bold text-black transition-all",
+                "from-yellow to-orange rounded-full border border-black bg-gradient-to-b px-4 py-2 text-lg font-bold text-black transition-all",
                 "hover:scale-110 hover:bg-opacity-100 hover:shadow-2xl",
               )}
-              onClick={() => join()}
             >
               Quick Play
-            </button>
+            </Link>
           </div>
         </div>
       </div>

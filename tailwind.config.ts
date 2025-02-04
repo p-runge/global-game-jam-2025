@@ -22,6 +22,20 @@ export default {
       black: "#050737",
       transparent: "transparent",
     },
+    fontSize: {
+      xs: "24px",
+      sm: "32px",
+      base: "40px",
+      lg: "48px",
+      xl: "64px",
+    },
+    borderWidth: {
+      xs: "2px",
+      sm: "4px",
+      DEFAULT: "6px",
+      lg: "8px",
+      xl: "12px",
+    },
 
     extend: {
       fontFamily: {
