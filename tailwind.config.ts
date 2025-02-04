@@ -7,7 +7,7 @@ export default {
     screens: {},
     colors: {
       primary: {
-        darkest: "#011A7F",
+        darkest: "#0B0146",
         darker: "#011A7F",
         dark: "#0257E8",
         DEFAULT: "#3198FA",

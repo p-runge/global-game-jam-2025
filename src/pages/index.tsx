@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
+import { Frame } from "~/components/frame";
 import { cn } from "~/utils/cn";
 
 export default function Home() {
@@ -16,28 +17,28 @@ export default function Home() {
   }, []);
 
   return (
-    <div>
-      <div className="flex h-screen items-center justify-center bg-gray-800">
+    <Frame>
+      <div className="flex h-full items-center justify-center">
         <div
-          className="relative flex h-[500px] w-[500px] flex-col rounded-lg p-4"
+          className="relative flex h-[1080px] w-[1080px] flex-col rounded-lg p-4"
           style={{
             backgroundImage: "url('/splash.jpeg')",
             backgroundSize: "cover",
           }}
         >
-          <div className="absolute bottom-[50px] left-1/2 flex -translate-x-1/2 flex-col gap-2">
+          <div className="absolute bottom-[10%] left-1/2 flex -translate-x-1/2 flex-col gap-2">
             <button
               className={cn(
-                "rounded-lg border border-white bg-amber-600 px-2 py-1 text-3xl font-bold text-white transition-colors",
-                "hover:bg-amber-800",
+                "from-yellow to-orange rounded-full border-[8px] border-black bg-gradient-to-b px-8 py-4 text-6xl font-bold text-black transition-all",
+                "hover:scale-110 hover:bg-opacity-100 hover:shadow-2xl",
               )}
               onClick={() => join()}
             >
-              QuickPlay
+              Quick Play
             </button>
           </div>
         </div>
       </div>
-    </div>
+    </Frame>
   );
 }
