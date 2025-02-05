@@ -4,7 +4,7 @@
 
 :root {
   --shadow-width: 10px;
-  @apply text-base;
+  @apply text-base text-black;
 }
 .glow-white {
   box-shadow: 0 0 var(--shadow-width) var(--shadow-width) white;

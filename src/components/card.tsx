@@ -73,22 +73,41 @@ function MonsterCard({ card }: { card: Monster }) {
   return (
     <div
       style={{ backgroundImage: `url(/${card.image})` }}
-      className={`relative flex h-card w-card flex-col justify-between rounded-lg border-4 border-black bg-gray-800 bg-cover bg-center text-white shadow-sm hover:bg-gray-700`}
+      className="relative flex h-card w-card flex-col justify-between rounded-lg border-4 border-black bg-cover bg-center shadow-sm"
     >
-      <div className="mb-2 text-xl font-bold tracking-tight">{card.name}</div>
+      <div className="bg-black text-xl font-bold leading-none tracking-tight text-white">
+        {card.name}
+      </div>
 
       <div className="flex items-center justify-center">
-        <div className="flex h-20 w-20 items-center justify-center rounded-full border bg-[url('/bubble-plain.jpg')] bg-cover p-2 text-center text-[80px] font-normal leading-none">
-          {card.currentSize}
-        </div>
+        <Value
+          value={card.currentSize}
+          className="bg-primary-light h-10 w-10 text-xl"
+        />
 
-        <div className="absolute right-2 top-2 flex aspect-square h-7 w-7 items-center justify-center rounded-full border bg-[url('/bubble-plain.jpg')] bg-cover py-2">
-          {card.cost}
-        </div>
+        <Value
+          value={card.cost}
+          className="border-sm absolute -right-1 -top-1 h-4 w-4 bg-white text-xs"
+        />
       </div>
-      <div className="absolute bottom-1 right-1 flex h-10 w-10 items-center justify-center rounded-full border bg-[url('/bubble-plain.jpg')] bg-cover text-2xl">
-        {card.currentStability}
-      </div>
+
+      <Value
+        value={card.currentStability}
+        className="bg-orange border-sm absolute bottom-0 right-0 h-5 w-5 text-sm"
+      />
     </div>
+  );
+}
+
+function Value({ value, className }: { value: number; className: string }) {
+  return (
+    <span
+      className={cn(
+        "flex items-center justify-center rounded-full border",
+        className,
+      )}
+    >
+      {value}
+    </span>
   );
 }
