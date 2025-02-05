@@ -263,12 +263,12 @@ export default function Game() {
               End Turn
             </button>
           )}
-          <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 scale-150 hover:bottom-20">
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 transition-transform hover:translate-y-0">
             <div className="pointer-events-none flex">
               {cardLocations["player-hand"].map((card) => (
                 <div
                   key={card.id}
-                  className="pointer-events-auto -mx-[45px] origin-bottom scale-50 transition-transform hover:z-10 hover:scale-100"
+                  className="pointer-events-auto origin-bottom transition-transform hover:z-10 hover:scale-125"
                 >
                   <Draggable
                     id={card.id}

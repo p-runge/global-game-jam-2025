@@ -18,7 +18,7 @@ export function Card({ card, hidden }: { card: Card; hidden: boolean }) {
 
 function BackSideCard() {
   return (
-    <div className="relative flex h-card w-card flex-col justify-between rounded-lg border-4 border-black bg-gray-800 bg-[url('/bubble.webp')] bg-cover bg-center text-white shadow-sm hover:bg-gray-700"></div>
+    <div className="relative flex h-card w-card flex-col justify-between rounded-lg border border-black bg-[url('/bubble.webp')] bg-cover bg-center text-white shadow-sm"></div>
   );
 }
 
@@ -26,14 +26,16 @@ function SpellCard({ card }: { card: Spell }) {
   return (
     <div
       style={{ backgroundImage: `url(/${card.image})` }}
-      className={`relative flex h-card w-card flex-col justify-between rounded-lg border-4 border-black bg-gray-800 bg-cover bg-center text-white shadow-sm hover:bg-gray-700`}
+      className="relative flex h-card w-card flex-col justify-between overflow-hidden rounded-lg border border-black bg-cover bg-center text-white shadow-sm"
     >
-      <div className="mb-2 text-xl font-bold tracking-tight">{card.name}</div>
+      <div className="bg-black text-center text-xl font-bold leading-none tracking-tight">
+        {card.name}
+      </div>
 
       <div
         className={cn(
-          "flex flex-col items-center gap-2 p-2",
-          card.damage > 0 ? "bg-red-500" : "bg-green-500",
+          "flex flex-col items-center gap-2",
+          card.damage > 0 ? "bg-orange" : "bg-primary",
         )}
       >
         {/* render only stats with their value and regarding icons if they are not 0 */}
@@ -73,9 +75,9 @@ function MonsterCard({ card }: { card: Monster }) {
   return (
     <div
       style={{ backgroundImage: `url(/${card.image})` }}
-      className="relative flex h-card w-card flex-col justify-between rounded-lg border-4 border-black bg-cover bg-center shadow-sm"
+      className="relative flex h-card w-card flex-col justify-between overflow-hidden rounded-lg border border-black bg-cover bg-center shadow-sm"
     >
-      <div className="bg-black text-xl font-bold leading-none tracking-tight text-white">
+      <div className="bg-black text-center text-xl font-bold leading-none tracking-tight text-white">
         {card.name}
       </div>
 
