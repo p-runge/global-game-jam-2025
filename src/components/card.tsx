@@ -39,10 +39,10 @@ function SpellCard({ card }: { card: Spell }) {
         {/* render only stats with their value and regarding icons if they are not 0 */}
         {card.damage !== 0 && (
           <div className="flex w-full items-center justify-center">
-            <span className="text-6xl">
+            <span className="text-xl">
               <TbRulerMeasure2 />
             </span>
-            <span className="text-6xl">{`${card.damage > 0 ? "-" : "+"}${Math.abs(card.damage)}`}</span>
+            <span className="text-xl">{`${card.damage > 0 ? "-" : "+"}${Math.abs(card.damage)}`}</span>
           </div>
         )}
         {/*
@@ -50,18 +50,18 @@ function SpellCard({ card }: { card: Spell }) {
           */}
         {/* {card.size !== 0 && (
           <div className="flex w-full items-center justify-center">
-            <span className="text-6xl">
+            <span className="text-xl">
               <MdOutlineHealthAndSafety />
             </span>
-            <span className="text-6xl">{`${card.size > 0 ? "-" : "+"}${Math.abs(card.size)}`}</span>
+            <span className="text-xl">{`${card.size > 0 ? "-" : "+"}${Math.abs(card.size)}`}</span>
           </div>
         )}
         {card.stability !== 0 && (
           <div className="flex w-full items-center justify-center">
-            <span className="text-6xl">
+            <span className="text-xl">
               <MdOutlineHealthAndSafety />
             </span>
-            <span className="text-6xl">{`${card.stability > 0 ? "-" : "+"}${Math.abs(card.stability)}`}</span>
+            <span className="text-xl">{`${card.stability > 0 ? "-" : "+"}${Math.abs(card.stability)}`}</span>
           </div>
         )} */}
       </div>

@@ -131,9 +131,10 @@ export default function Game() {
       <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <div className="relative h-full bg-[url('/background.jpg')] bg-cover bg-center">
           {/* turn info */}
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-center">
-            <div className="text-3xl font-bold">Turn Count: {turnCount}</div>
-            <div className="text-3xl font-bold">
+          <div className="bg-primary-darkest absolute left-2 top-1/2 w-[200px] -translate-y-1/2 rounded px-2 py-1 text-center">
+            <div className="font-bold text-white">Round: {turnCount}</div>
+            <hr className="border-t-xs my-2 text-white" />
+            <div className="hyphens-auto break-words font-bold text-white">
               {turn === "player" ? "Your Turn" : "Opponent's Turn"}
             </div>
           </div>
@@ -256,7 +257,7 @@ export default function Game() {
           </div>
           {turn === "player" && (
             <button
-              className="absolute right-32 top-1/2 rounded-lg border bg-white p-4 text-center text-lg"
+              className="bg-primary hover:bg-primary-dark absolute right-2 top-1/2 -translate-y-1/2 rounded-lg border p-4 text-center shadow-xl transition-all hover:scale-110"
               onClick={() => endTurn()}
             >
               End Turn
@@ -293,7 +294,7 @@ export default function Game() {
       </DndContext>
       {winner !== null && (
         <div className="">
-          <div className="absolute inset-0 left-1/4 top-1/4 h-1/2 w-1/2 content-center justify-center bg-black/80 text-center text-6xl text-white">
+          <div className="absolute inset-0 left-1/4 top-1/4 h-1/2 w-1/2 content-center justify-center bg-black/80 text-center text-white">
             {winner === "player" && <p>You Won</p>}
             {winner === "opponent" && <p>You Lost</p>}
           </div>
