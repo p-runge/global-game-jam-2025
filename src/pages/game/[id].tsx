@@ -143,12 +143,15 @@ export default function Game() {
           <div className="absolute left-1/2 top-1/2">
             {/* opponent */}
             <div className="absolute -top-[305px] left-[570px] -translate-x-1/2">
-              <div className="h-card w-card">
+              <div className="relative h-card w-card">
                 {cardLocations["opponent-discard-pile"].map((card) => (
                   <div className="absolute" key={card.id}>
                     <Card card={card} hidden={false}></Card>
                   </div>
                 ))}
+                {cardLocations["opponent-discard-pile"].length > 0 && (
+                  <div className="absolute inset-0 rounded-lg bg-black/70"></div>
+                )}
               </div>
             </div>
 
@@ -235,12 +238,15 @@ export default function Game() {
               </Droppable>
             </div>
             <div className="absolute -bottom-[305px] right-[570px] translate-x-1/2">
-              <div className="h-card w-card">
+              <div className="relative h-card w-card">
                 {cardLocations["player-discard-pile"].map((card) => (
                   <div className="absolute" key={card.id}>
                     <Card card={card} hidden={false}></Card>
                   </div>
                 ))}
+                {cardLocations["player-discard-pile"].length > 0 && (
+                  <div className="absolute inset-0 rounded-lg bg-black/70"></div>
+                )}
               </div>
             </div>
           </div>
