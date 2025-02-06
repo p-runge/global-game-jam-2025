@@ -143,7 +143,7 @@ export default function Game() {
           <div className="absolute left-1/2 top-1/2">
             {/* opponent */}
             <div className="absolute -top-[305px] left-[570px] -translate-x-1/2">
-              <div className="h-card w-card bg-blue-300/50 text-white">
+              <div className="h-card w-card">
                 {cardLocations["opponent-discard-pile"].map((card) => (
                   <div className="absolute" key={card.id}>
                     <Card card={card} hidden={false}></Card>
@@ -153,7 +153,7 @@ export default function Game() {
             </div>
 
             <div className="absolute -top-[305px] -translate-x-1/2">
-              <div className="flex h-card w-[940px] gap-[10px] bg-blue-300/50">
+              <div className="flex h-card w-[940px] gap-[10px]">
                 {cardLocations["opponent-board"].map((card) => (
                   <div key={card.id}>
                     <Droppable
@@ -170,7 +170,7 @@ export default function Game() {
             </div>
 
             <div className="absolute -left-[570px] -top-[305px] -translate-x-1/2">
-              <div className="h-card w-card bg-green-400">
+              <div className="h-card w-card">
                 {cardLocations["opponent-deck"].map((card) => (
                   <div className="absolute" key={card.id}>
                     <Card card={card} hidden></Card>
@@ -181,7 +181,7 @@ export default function Game() {
 
             {/* player */}
             <div className="absolute -bottom-[305px] left-[570px] -translate-x-1/2">
-              <div className="h-card w-card bg-green-400">
+              <div className="h-card w-card">
                 {cardLocations["player-deck"].map((card) => (
                   <div
                     className={cn(
@@ -205,7 +205,7 @@ export default function Game() {
 
             <div className="absolute -bottom-[305px] -translate-x-1/2">
               <Droppable id="player-board" enabled={isDraggingMonsterFromHand}>
-                <div className="flex h-card w-[940px] gap-[10px] bg-blue-300/50">
+                <div className="flex h-card w-[940px] gap-[10px]">
                   {cardLocations["player-board"].map((card) => (
                     <div key={card.id}>
                       <Droppable
@@ -235,7 +235,7 @@ export default function Game() {
               </Droppable>
             </div>
             <div className="absolute -bottom-[305px] right-[570px] translate-x-1/2">
-              <div className="h-card w-card bg-blue-300/50 text-white">
+              <div className="h-card w-card">
                 {cardLocations["player-discard-pile"].map((card) => (
                   <div className="absolute" key={card.id}>
                     <Card card={card} hidden={false}></Card>

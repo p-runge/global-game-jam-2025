@@ -75,9 +75,9 @@ function MonsterCard({ card }: { card: Monster }) {
   return (
     <div
       style={{ backgroundImage: `url(/${card.image})` }}
-      className="relative flex h-card w-card flex-col justify-between overflow-hidden rounded-lg border border-black bg-cover bg-center shadow-sm"
+      className="relative flex h-card w-card flex-col justify-between rounded-lg border border-black bg-cover bg-center shadow-sm"
     >
-      <div className="bg-black text-center text-xl font-bold leading-none tracking-tight text-white">
+      <div className="overflow-hidden bg-black text-center text-xl font-bold leading-none tracking-tight text-white">
         {card.name}
       </div>
 
@@ -89,7 +89,7 @@ function MonsterCard({ card }: { card: Monster }) {
 
         <Value
           value={card.cost}
-          className="border-sm absolute -right-1 -top-1 h-4 w-4 bg-white text-xs"
+          className="border-sm absolute -right-1 -top-1 h-4 w-4 bg-white text-xs text-black"
         />
       </div>
 
