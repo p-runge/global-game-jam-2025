@@ -15,7 +15,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
           name="description"
           content="Slurp smaller bubbles to grow bigger and win the game"
         />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.png" />
       </Head>
       <GameManagerProvider>
         <Component {...pageProps} />
