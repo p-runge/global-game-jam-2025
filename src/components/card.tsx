@@ -74,7 +74,7 @@ function SpellCard({ card }: { card: Spell }) {
 function MonsterCard({ card }: { card: Monster }) {
   return (
     <div
-      style={{ backgroundImage: `url(/${card.image})` }}
+      style={{ backgroundImage: `url(/cards/${card.image})` }}
       className="relative flex h-card w-card flex-col justify-between rounded-lg border border-black bg-cover bg-center shadow-sm"
     >
       <div className="overflow-hidden bg-black text-center text-xl font-bold leading-none tracking-tight text-white">
