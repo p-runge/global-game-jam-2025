@@ -1,4 +1,3 @@
-import Head from "next/head";
 import Link from "next/link";
 import { useEffect } from "react";
 import { Frame } from "~/components/frame";
@@ -13,14 +12,6 @@ export default function Home() {
 
   return (
     <Frame>
-      <Head>
-        <title>Magic: The Bubbling</title>
-        <meta
-          name="description"
-          content="Slurp smaller bubbles to grow bigger and win the game"
-        />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
       <div className="flex h-full items-center justify-center">
         <div
           className="relative flex h-[1080px] w-[1080px] flex-col rounded-lg p-4"
