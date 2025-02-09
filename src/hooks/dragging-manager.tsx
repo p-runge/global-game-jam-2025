@@ -34,7 +34,7 @@ export const useDraggingManager = () => {
       if (!from) return;
       if (from === to) return;
 
-      console.log("move draggable", cardId, "from", from, "to", to);
+      console.log("Move draggable", cardId, "from", from, "to", to);
       if (from === "player-hand" && to === "player-board") {
         // play card
         moveCard({ cardId, to: "player-board" });

@@ -3,6 +3,8 @@ import {
   type DragEndEvent,
   type DragStartEvent,
 } from "@dnd-kit/core";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 import { Card } from "~/components/card";
 import Draggable from "~/components/draggable";
 import Droppable, {
@@ -29,6 +31,21 @@ declare module "@dnd-kit/core" {
 }
 
 export default function Game() {
+  const router = useRouter();
+  useEffect(() => {
+    const gameId = document.cookie
+      .split(";")
+      .find((c) => c.includes("gameId"))
+      ?.split("=")[1];
+    const playerId = document.cookie
+      .split(";")
+      .find((c) => c.includes("playerId"))
+      ?.split("=")[1];
+    if (!gameId || !playerId) {
+      void router.push("/");
+    }
+  }, [router]);
+
   const {
     turn,
     turnCount,
@@ -38,8 +55,10 @@ export default function Game() {
     getCardLocation,
     getCardById,
   } = useGameManager();
+
   const { startDragging, stopDragging, moveItem, draggableId } =
     useDraggingManager();
+
   const isDraggingSpellFromHand =
     draggableId !== null &&
     getCardById(draggableId)?.type === "spell" &&
@@ -72,14 +91,6 @@ export default function Game() {
     if (!draggedCard) return false;
 
     const cardLocation = getCardLocation(cardId);
-    console.log(
-      "canDragTo",
-      draggedCard,
-      cardLocation,
-      targetArea,
-      isDroppableMonsterOpponent.test(targetArea),
-      isDroppableMonsterPlayer.test(targetArea),
-    );
     if (
       cardLocation === "player-hand" &&
       draggedCard.type === "monster" &&
@@ -125,9 +136,9 @@ export default function Game() {
       <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <div className="relative h-full bg-[url('/background.jpg')] bg-cover bg-center">
           {/* turn info */}
-          <div className="bg-primary-darkest absolute left-2 top-1/2 w-[200px] -translate-y-1/2 rounded px-2 py-1 text-center">
+          <div className="absolute left-2 top-1/2 w-[200px] -translate-y-1/2 rounded bg-primary-darkest px-2 py-1 text-center">
             <div className="font-bold text-white">Round: {turnCount}</div>
-            <hr className="border-t-xs my-2 text-white" />
+            <hr className="my-2 border-t-xs text-white" />
             <div className="hyphens-auto break-words font-bold text-white">
               {turn === "player" ? "Your Turn" : "Opponent's Turn"}
             </div>
@@ -188,7 +199,7 @@ export default function Game() {
                     key={card.id}
                     onClick={() => {
                       if (turn !== "player") return;
-                      console.log("draw card from player deck");
+                      console.log("Draw card from player deck");
                       if (cardLocations["player-hand"].length < 5) {
                         moveCard({ cardId: card.id, to: "player-hand" });
                       }
@@ -260,7 +271,7 @@ export default function Game() {
           </div>
           {turn === "player" && (
             <button
-              className="bg-primary hover:bg-primary-dark absolute right-2 top-1/2 -translate-y-1/2 rounded-lg border p-4 text-center shadow-xl transition-all hover:scale-110"
+              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg border bg-primary p-4 text-center shadow-xl transition-all hover:scale-110 hover:bg-primary-dark"
               onClick={() => endTurn()}
             >
               End Turn

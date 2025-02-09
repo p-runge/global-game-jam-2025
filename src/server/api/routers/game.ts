@@ -35,7 +35,8 @@ function getUniqueDeckFromCards(cards: Card[]) {
       id: Math.random().toString(36).substring(7),
     }));
 }
-async function createNewGame() {
+async function createNewGame(player1: string, player2: string) {
+  console.log("Creating new game... Starting with player:", player1);
   const id = Math.random().toString(36).substring(7);
 
   const allMonsters = await db.monster.findMany();
@@ -67,7 +68,11 @@ async function createNewGame() {
 
   // somehow save the game state
   const game: GameState = {
-    activePlayer: "player-1",
+    players: {
+      player1,
+      player2,
+    },
+    activePlayer: player1,
     turnCount: 0,
     winner: null,
     cardLocations: {
@@ -87,9 +92,13 @@ async function createNewGame() {
   return id;
 }
 type GameState = {
-  activePlayer: "player-1" | "player-2";
+  players: {
+    player1: string;
+    player2: string;
+  };
+  activePlayer: string;
   turnCount: number;
-  winner: "player-1" | "player-2" | null;
+  winner: string | null;
   cardLocations: CardLocationMap;
 };
 const gameStates: Record<string, GameState> = {};
@@ -99,55 +108,66 @@ const queuedPlayers: string[] = [];
 const ee = new EventEmitter();
 
 export const gameRouter = createTRPCRouter({
-  gameData: publicProcedure
-    .input(
-      z.object({
-        id: z.string().nullable(),
-      }),
-    )
-    .subscription(async function* ({ input: { id }, signal }) {
-      if (!id) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Missing game id",
-        });
-      }
+  gameData: publicProcedure.subscription(async function* ({
+    signal,
+    ctx: { gameId, playerId },
+  }) {
+    if (!gameId) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Missing game id",
+      });
+    }
 
-      // emit the initial game state
-      const game = gameStates[id];
-      if (!game) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Game not found",
-        });
-      }
+    const game = gameStates[gameId];
+    if (!game) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Game not found",
+      });
+    }
 
-      yield game;
+    const isGamePlayer =
+      playerId === game.players.player1 || playerId === game.players.player2;
+    if (!isGamePlayer) {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: "Player is not in the game",
+      });
+    }
 
-      while (true) {
-        // listen for new events
-        for await (const [data] of on(ee, `updateGameState-${id}`, {
-          signal,
-        })) {
-          const game = data as GameState;
-          yield game;
-        }
+    yield game;
+
+    while (true) {
+      // listen for new events
+      for await (const [data] of on(ee, `updateGameState-${gameId}`, {
+        signal,
+      })) {
+        const game = data as GameState;
+        yield game;
       }
-    }),
+    }
+  }),
 
   lobby: publicProcedure.subscription(async function* ({ signal }) {
     const opponentPlayerId = queuedPlayers.shift();
     if (opponentPlayerId) {
-      const gameId = await createNewGame();
+      const playerId = Math.random().toString(36).substring(7);
+      // decide who goes first by random
+      const shuffledPlayers =
+        Math.random() > 0.5
+          ? ([playerId, opponentPlayerId] as const)
+          : ([opponentPlayerId, playerId] as const);
+      const gameId = await createNewGame(...shuffledPlayers);
 
       // notify opponent player of created game
       ee.emit(`joinLobby-${opponentPlayerId}`, {
         gameId,
-        playerId: "player-1",
+        playerId: opponentPlayerId,
       });
 
       // notify player of created game
-      yield { gameId, playerId: "player-2" };
+      yield { gameId, playerId };
     } else {
       // add player to queue
       const playerId = Math.random().toString(36).substring(7);
@@ -174,24 +194,16 @@ export const gameRouter = createTRPCRouter({
       });
     }
 
-    game.activePlayer = playerId === "player-1" ? "player-2" : "player-1";
+    game.activePlayer =
+      game.players.player1 === playerId
+        ? game.players.player2
+        : game.players.player1;
     game.turnCount++;
 
     ee.emit(`updateGameState-${gameId}`, game);
 
     return game;
   }),
-
-  create: publicProcedure
-    .output(z.object({ id: z.string() }))
-    .mutation(async () => {
-      const gameId = await createNewGame();
-
-      return {
-        id: gameId,
-        state: gameStates[gameId],
-      };
-    }),
 
   moveCard: gameProcedure
     .input(
@@ -211,11 +223,19 @@ export const gameRouter = createTRPCRouter({
     )
     .mutation(({ ctx: { gameId, playerId }, input: { cardId, to } }) => {
       // TODO: check for game state in context and put it there
+      const isPlayersTurn = playerId === gameStates[gameId]?.activePlayer;
+      if (!isPlayersTurn) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Not player's turn",
+        });
+      }
 
       // map client card locations to server ones based on isPlayer1
+      const isPlayer1 = playerId === gameStates[gameId]?.players.player1;
       const serverTo = (
-        (playerId === "player-1" && to.startsWith("player")) ||
-        (playerId === "player-2" && to.startsWith("opponent"))
+        (isPlayer1 && to.startsWith("player")) ||
+        (!isPlayer1 && to.startsWith("opponent"))
           ? to.replace("player", "player-1").replace("opponent", "player-2")
           : to.replace("player", "player-2").replace("opponent", "player-1")
       ) as CardLocation;

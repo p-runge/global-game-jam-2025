@@ -1,15 +1,8 @@
 import Link from "next/link";
-import { useEffect } from "react";
 import { Frame } from "~/components/frame";
 import { cn } from "~/utils/cn";
 
 export default function Home() {
-  useEffect(() => {
-    // clear cookies
-    document.cookie = "gameId=";
-    document.cookie = "playerId=";
-  }, []);
-
   return (
     <Frame>
       <div className="flex h-full items-center justify-center">

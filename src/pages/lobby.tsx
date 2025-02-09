@@ -4,6 +4,12 @@ import { Frame } from "~/components/frame";
 import { api } from "~/utils/api";
 
 export default function Lobby() {
+  useEffect(() => {
+    // clear cookies
+    document.cookie = "gameId=";
+    document.cookie = "playerId=";
+  }, []);
+
   const router = useRouter();
 
   const [status, setStatus] = useState<"waiting" | "ready">("waiting");
@@ -22,14 +28,10 @@ export default function Lobby() {
       return;
     }
 
-    const interval = setInterval(() => {
-      const gameId = document.cookie.replace(
-        /(?:(?:^|.*;\s*)gameId\s*=\s*([^;]*).*$)|^.*$/,
-        "$1",
-      );
-      void router.push(`/game/${gameId}`);
+    const interval = setTimeout(() => {
+      void router.push(`/game`);
     }, 1000);
-    return () => clearInterval(interval);
+    return () => clearTimeout(interval);
   }, [status, router]);
 
   return (

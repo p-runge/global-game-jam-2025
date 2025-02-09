@@ -1,5 +1,11 @@
 import { useRouter } from "next/router";
-import { createContext, useCallback, useContext, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { type Card, type Monster } from "~/server/types/models";
 import { api } from "~/utils/api";
 import { getKeys } from "~/utils/common";
@@ -38,79 +44,61 @@ export function GameManagerProvider({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const gameId = router.query.id as string | undefined;
 
-  const [playerId, setPlayerId] = useState<
-    "player-1" | "player-2" | undefined
-  >();
+  const [playerId, setPlayerId] = useState<string | undefined>();
+  useEffect(() => {
+    // read playerId from cookie
+    const cookieValue = document.cookie
+      .split(";")
+      .find((c) => c.includes("playerId"))
+      ?.split("=")[1];
+
+    const playerId = cookieValue || undefined;
+    setPlayerId(playerId);
+  }, []);
 
   const [cardLocations, setCardLocations] = useState<CardLocationMap>();
-  const { data } = api.game.gameData.useSubscription(
-    { id: gameId ?? null },
-    {
-      onError: (error) => {
-        if (error.data?.code === "NOT_FOUND") {
-          void router.push("/");
-        }
-      },
-      onData: (data) => {
-        // read playerId from cookie
-        const cookieValue = document.cookie
-          .split(";")
-          .find((c) => c.includes("playerId"))
-          ?.split("=")[1];
-
-        const playerId =
-          cookieValue === "player-1" || cookieValue === "player-2"
-            ? cookieValue
-            : undefined;
-        setPlayerId(playerId);
-
-        if (playerId === undefined) {
-          console.error("isPlayer1 is not set");
-          return;
-        }
-
-        // map server card locations to client ones based on isPlayer1
-        const clientCardLocations: CardLocationMap = {
-          "player-deck":
-            playerId === "player-1"
-              ? data.cardLocations["player-1-deck"]
-              : data.cardLocations["player-2-deck"],
-          "player-hand":
-            playerId === "player-1"
-              ? data.cardLocations["player-1-hand"]
-              : data.cardLocations["player-2-hand"],
-          "player-board":
-            playerId === "player-1"
-              ? data.cardLocations["player-1-board"]
-              : data.cardLocations["player-2-board"],
-          "player-discard-pile":
-            playerId === "player-1"
-              ? data.cardLocations["player-1-discard-pile"]
-              : data.cardLocations["player-2-discard-pile"],
-          "opponent-deck":
-            playerId === "player-1"
-              ? data.cardLocations["player-2-deck"]
-              : data.cardLocations["player-1-deck"],
-          "opponent-hand":
-            playerId === "player-1"
-              ? data.cardLocations["player-2-hand"]
-              : data.cardLocations["player-1-hand"],
-          "opponent-board":
-            playerId === "player-1"
-              ? data.cardLocations["player-2-board"]
-              : data.cardLocations["player-1-board"],
-          "opponent-discard-pile":
-            playerId === "player-1"
-              ? data.cardLocations["player-2-discard-pile"]
-              : data.cardLocations["player-1-discard-pile"],
-        };
-
-        setCardLocations(clientCardLocations);
-      },
+  const { data } = api.game.gameData.useSubscription(undefined, {
+    onError: (error) => {
+      if (error.data?.code === "BAD_REQUEST") {
+        void router.push("/");
+      } else if (error.data?.code === "NOT_FOUND") {
+        void router.push("/");
+      } else if (error.data?.code === "FORBIDDEN") {
+        void router.push("/");
+      }
     },
-  );
+    onData: (data) => {
+      const isPlayer1 = playerId === data.players.player1;
+
+      // map server card locations to client ones based on isPlayer1
+      const clientCardLocations: CardLocationMap = isPlayer1
+        ? {
+            "player-deck": data.cardLocations["player-1-deck"],
+            "player-hand": data.cardLocations["player-1-hand"],
+            "player-board": data.cardLocations["player-1-board"],
+            "player-discard-pile": data.cardLocations["player-1-discard-pile"],
+            "opponent-deck": data.cardLocations["player-2-deck"],
+            "opponent-hand": data.cardLocations["player-2-hand"],
+            "opponent-board": data.cardLocations["player-2-board"],
+            "opponent-discard-pile":
+              data.cardLocations["player-2-discard-pile"],
+          }
+        : {
+            "player-deck": data.cardLocations["player-2-deck"],
+            "player-hand": data.cardLocations["player-2-hand"],
+            "player-board": data.cardLocations["player-2-board"],
+            "player-discard-pile": data.cardLocations["player-2-discard-pile"],
+            "opponent-deck": data.cardLocations["player-1-deck"],
+            "opponent-hand": data.cardLocations["player-1-hand"],
+            "opponent-board": data.cardLocations["player-1-board"],
+            "opponent-discard-pile":
+              data.cardLocations["player-1-discard-pile"],
+          };
+
+      setCardLocations(clientCardLocations);
+    },
+  });
 
   const getCardById = useCallback(
     (cardId: string) => {

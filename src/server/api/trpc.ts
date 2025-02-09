@@ -23,7 +23,7 @@ import { db } from "~/server/db";
 
 type CreateContextOptions = {
   gameId: string | undefined;
-  playerId: "player-1" | "player-2" | undefined;
+  playerId: string | undefined;
 };
 
 /**
@@ -54,9 +54,8 @@ export const createTRPCContext = (_opts: CreateNextContextOptions) => {
   const playerId = _opts.req.cookies.playerId;
 
   return createInnerTRPCContext({
-    gameId,
-    playerId:
-      playerId === "player-1" || playerId === "player-2" ? playerId : undefined,
+    gameId: gameId || undefined,
+    playerId: playerId || undefined,
   });
 };
 
