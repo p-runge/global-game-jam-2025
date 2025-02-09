@@ -25,7 +25,7 @@ function BackSideCard() {
 function SpellCard({ card }: { card: Spell }) {
   return (
     <div
-      style={{ backgroundImage: `url(/${card.image})` }}
+      style={{ backgroundImage: `url(/cards/${card.image})` }}
       className="relative flex h-card w-card flex-col justify-between overflow-hidden rounded-lg border border-black bg-cover bg-center text-white shadow-sm"
     >
       <div className="bg-black text-center text-xl font-bold leading-none tracking-tight">
@@ -84,18 +84,18 @@ function MonsterCard({ card }: { card: Monster }) {
       <div className="flex items-center justify-center">
         <Value
           value={card.currentSize}
-          className="bg-primary-light h-10 w-10 text-xl"
+          className="h-10 w-10 bg-primary-light text-xl"
         />
 
         <Value
           value={card.cost}
-          className="border-sm absolute -right-1 -top-1 h-4 w-4 bg-white text-xs text-black"
+          className="absolute -right-1 -top-1 h-4 w-4 border-sm bg-white text-xs text-black"
         />
       </div>
 
       <Value
         value={card.currentStability}
-        className="bg-orange border-sm absolute bottom-0 right-0 h-5 w-5 text-sm"
+        className="absolute bottom-0 right-0 h-5 w-5 border-sm bg-orange text-sm"
       />
     </div>
   );
