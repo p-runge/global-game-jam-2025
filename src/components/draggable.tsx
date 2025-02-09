@@ -17,7 +17,9 @@ export default function Draggable({ id, enabled, children }: Props) {
       id,
     });
 
-  return (
+  return !enabled ? (
+    children
+  ) : (
     <button
       ref={setNodeRef}
       style={
@@ -32,8 +34,7 @@ export default function Draggable({ id, enabled, children }: Props) {
       className={cn(
         isDragging
           ? "scale-125 cursor-grabbing"
-          : enabled &&
-              "hover:glow-green cursor-grab hover:z-10 hover:scale-125",
+          : "hover:glow-green cursor-grab hover:z-10 hover:scale-125",
       )}
     >
       {children}
