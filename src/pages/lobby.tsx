@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { Frame } from "~/components/frame";
+import Frame from "~/hooks/frame";
 import { api } from "~/utils/api";
 
 export default function Lobby() {
@@ -37,7 +37,7 @@ export default function Lobby() {
   return (
     <Frame>
       <div className="flex h-full items-center justify-center">
-        <div className="bg-primary items-center rounded-lg p-4 text-center">
+        <div className="items-center rounded-lg bg-primary p-4 text-center">
           {status === "ready" ? (
             <>
               <h2 className="text-xl">Opponent found!</h2>
@@ -47,7 +47,7 @@ export default function Lobby() {
             <>
               <h2 className="mb-2 text-xl">Waiting for opponent...</h2>
               {/* loading spinner */}
-              <div className="border-primary-darkest border-t-sm mx-auto h-8 w-8 animate-spin rounded-full" />
+              <div className="mx-auto h-8 w-8 animate-spin rounded-full border-t-sm border-primary-darkest" />
             </>
           )}
         </div>

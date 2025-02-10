@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Frame } from "~/components/frame";
+import Frame from "~/hooks/frame";
 import { cn } from "~/utils/cn";
 
 export default function Home() {
@@ -17,7 +17,7 @@ export default function Home() {
             <Link
               href="/lobby"
               className={cn(
-                "from-yellow to-orange rounded-full border border-black bg-gradient-to-b px-4 py-2 text-lg font-bold text-black transition-all",
+                "rounded-full border border-black bg-gradient-to-b from-yellow to-orange px-4 py-2 text-lg font-bold text-black transition-all",
                 "hover:scale-110 hover:bg-opacity-100 hover:shadow-2xl",
               )}
             >

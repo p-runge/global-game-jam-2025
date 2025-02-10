@@ -12,8 +12,8 @@ import Droppable, {
   isDroppableMonsterPlayer,
   type DroppableId,
 } from "~/components/droppable";
-import { Frame } from "~/components/frame";
 import { useDraggingManager } from "~/hooks/dragging-manager";
+import Frame from "~/hooks/frame";
 import { useGameManager } from "~/hooks/game-manager";
 import type { Card as TCard } from "~/server/types/models";
 import { api } from "~/utils/api";
