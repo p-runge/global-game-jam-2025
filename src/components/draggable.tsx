@@ -1,5 +1,6 @@
 import { useDraggable } from "@dnd-kit/core";
 import React from "react";
+import { useDraggingManager } from "~/hooks/dragging-manager";
 import { cn } from "~/utils/cn";
 import type { DroppableId } from "./droppable";
 
@@ -16,10 +17,19 @@ export default function Draggable({ id, enabled, children }: Props) {
     useDraggable({
       id,
     });
+  const { draggableId } = useDraggingManager();
 
-  return !enabled ? (
-    children
-  ) : (
+  console.log("Draggable", id, enabled, draggableId);
+
+  if (!enabled) {
+    return children;
+  }
+
+  if (draggableId !== null && draggableId === id) {
+    return children;
+  }
+
+  return (
     <button
       ref={setNodeRef}
       style={
@@ -29,11 +39,12 @@ export default function Draggable({ id, enabled, children }: Props) {
             }
           : undefined
       }
-      {...listeners} // Only add listeners if draggable
+      {...listeners}
       {...attributes}
       className={cn(
+        "rounded-lg",
         isDragging
-          ? "scale-125 cursor-grabbing"
+          ? "glow-green z-20 scale-125 cursor-grabbing"
           : "hover:glow-green cursor-grab hover:z-10 hover:scale-125",
       )}
     >

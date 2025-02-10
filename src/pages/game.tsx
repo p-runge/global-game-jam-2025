@@ -160,19 +160,18 @@ export default function Game() {
               </div>
             </div>
 
-            <div className="absolute -top-[305px] -translate-x-1/2">
+            <div className="absolute -top-[305px] z-10 -translate-x-1/2">
               <div className="flex h-card w-[940px] gap-[10px]">
                 {cardLocations["opponent-board"].map((card) => (
-                  <div key={card.id}>
-                    <Droppable
-                      id={`monster-opponent-${card.id}`}
-                      enabled={
-                        isDraggingSpellFromHand || isDraggingMonsterFromBoard
-                      }
-                    >
-                      <Card card={card} hidden={false}></Card>
-                    </Droppable>
-                  </div>
+                  <Droppable
+                    key={card.id}
+                    id={`monster-opponent-${card.id}`}
+                    enabled={
+                      isDraggingSpellFromHand || isDraggingMonsterFromBoard
+                    }
+                  >
+                    <Card card={card} hidden={false}></Card>
+                  </Droppable>
                 ))}
               </div>
             </div>
@@ -211,33 +210,32 @@ export default function Game() {
               </div>
             </div>
 
-            <div className="absolute -bottom-[305px] -translate-x-1/2">
+            <div className="absolute -bottom-[305px] z-10 -translate-x-1/2">
               <Droppable id="player-board" enabled={isDraggingMonsterFromHand}>
                 <div className="flex h-card w-[940px] gap-[10px]">
                   {cardLocations["player-board"].map((card) => (
-                    <div key={card.id}>
-                      <Droppable
-                        id={`monster-player-${card.id}`}
-                        enabled={isDraggingSpellFromHand}
+                    <Droppable
+                      key={card.id}
+                      id={`monster-player-${card.id}`}
+                      enabled={isDraggingSpellFromHand}
+                    >
+                      <Draggable
+                        id={card.id}
+                        enabled={turn === "player"}
+                        droppableIds={cardLocations["opponent-board"]
+                          .filter(
+                            (c) =>
+                              card.type === "monster" &&
+                              c.type === "monster" &&
+                              c.currentSize < card.currentSize,
+                          )
+                          .map(
+                            (c) => `monster-opponent-${c.id}` as DroppableId,
+                          )}
                       >
-                        <Draggable
-                          id={card.id}
-                          enabled={turn === "player"}
-                          droppableIds={cardLocations["opponent-board"]
-                            .filter(
-                              (c) =>
-                                card.type === "monster" &&
-                                c.type === "monster" &&
-                                c.currentSize < card.currentSize,
-                            )
-                            .map(
-                              (c) => `monster-opponent-${c.id}` as DroppableId,
-                            )}
-                        >
-                          <Card card={card} hidden={false}></Card>
-                        </Draggable>
-                      </Droppable>
-                    </div>
+                        <Card card={card} hidden={false}></Card>
+                      </Draggable>
+                    </Droppable>
                   ))}
                 </div>
               </Droppable>
@@ -277,7 +275,7 @@ export default function Game() {
               End Turn
             </button>
           )}
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 transition-transform hover:translate-y-0">
+          <div className="absolute bottom-0 left-1/2 z-10 -translate-x-1/2 translate-y-1/2 transition-transform hover:translate-y-0">
             <div className="pointer-events-none flex">
               {cardLocations["player-hand"].map((card) => (
                 <div

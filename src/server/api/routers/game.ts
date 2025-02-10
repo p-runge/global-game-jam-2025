@@ -77,13 +77,13 @@ async function createNewGame(player1: string, player2: string) {
     winner: null,
     cardLocations: {
       "player-1-deck": getUniqueDeckFromCards(allCards),
-      "player-1-hand": [],
-      "player-1-board": [],
-      "player-1-discard-pile": [],
+      "player-1-hand": getUniqueDeckFromCards(allCards).splice(0, 5),
+      "player-1-board": getUniqueDeckFromCards(allCards).splice(0, 5),
+      "player-1-discard-pile": getUniqueDeckFromCards(allCards).splice(0, 5),
       "player-2-deck": getUniqueDeckFromCards(allCards),
-      "player-2-hand": [],
-      "player-2-board": [],
-      "player-2-discard-pile": [],
+      "player-2-hand": getUniqueDeckFromCards(allCards).splice(0, 5),
+      "player-2-board": getUniqueDeckFromCards(allCards).splice(0, 5),
+      "player-2-discard-pile": getUniqueDeckFromCards(allCards).splice(0, 5),
     },
   };
 

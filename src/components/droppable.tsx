@@ -16,17 +16,20 @@ type Props = {
   children: React.ReactNode;
 };
 export default function Droppable({ id, enabled, children }: Props) {
-  const { isOver, setNodeRef, active } = useDroppable({
+  const { isOver, setNodeRef } = useDroppable({
     id,
   });
 
-  return !enabled ? (
-    children
-  ) : (
+  if (!enabled) {
+    return children;
+  }
+
+  return (
     <div
       ref={setNodeRef}
       className={cn(
-        isOver ? "glow-green z-10 scale-125" : active && "glow-white",
+        "rounded-lg",
+        isOver ? "glow-green z-10 scale-125" : "glow-white",
       )}
     >
       {children}
