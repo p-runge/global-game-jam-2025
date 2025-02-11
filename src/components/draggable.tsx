@@ -1,5 +1,5 @@
 import { useDraggable } from "@dnd-kit/core";
-import React, { useEffect } from "react";
+import React from "react";
 import { useDraggingManager } from "~/hooks/dragging-manager";
 import { useFrame } from "~/hooks/frame";
 import { cn } from "~/utils/cn";
