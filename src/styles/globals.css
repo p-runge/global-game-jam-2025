@@ -9,23 +9,19 @@
 .glow-white {
   box-shadow: 0 0 var(--shadow-width) var(--shadow-width) white;
   background-color: white;
-  @apply transition-all;
 }
 
 .glow-green {
   box-shadow: 0 0 var(--shadow-width) var(--shadow-width) #0f0;
   background-color: #0f0;
-  @apply transition-all;
 }
 
 .hover\:glow-white:hover {
   box-shadow: 0 0 var(--shadow-width) var(--shadow-width) white;
   background-color: white;
-  @apply transition-all;
 }
 
 .hover\:glow-green:hover {
   box-shadow: 0 0 var(--shadow-width) var(--shadow-width) #0f0;
   background-color: #0f0;
-  @apply transition-all;
 }

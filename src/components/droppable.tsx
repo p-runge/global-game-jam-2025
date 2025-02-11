@@ -28,7 +28,7 @@ export default function Droppable({ id, enabled, children }: Props) {
     <div
       ref={setNodeRef}
       className={cn(
-        "rounded-lg",
+        "rounded-lg transition-all",
         isOver ? "glow-green z-10 scale-125" : "glow-white",
       )}
     >

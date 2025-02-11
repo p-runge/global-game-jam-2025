@@ -1,5 +1,5 @@
 import { useDraggable } from "@dnd-kit/core";
-import React from "react";
+import React, { useEffect } from "react";
 import { useDraggingManager } from "~/hooks/dragging-manager";
 import { useFrame } from "~/hooks/frame";
 import { cn } from "~/utils/cn";
@@ -32,7 +32,7 @@ export default function Draggable({ id, enabled, children }: Props) {
   }
 
   return (
-    <button
+    <div
       ref={setNodeRef}
       style={
         transform
@@ -45,14 +45,18 @@ export default function Draggable({ id, enabled, children }: Props) {
       }
       {...listeners}
       {...attributes}
-      className={cn(
-        "rounded-lg",
-        isDragging
-          ? "glow-green z-20 scale-125 cursor-grabbing"
-          : "hover:glow-green cursor-grab hover:z-10 hover:scale-125",
-      )}
+      className={cn("relative", isDragging ? "z-20" : "hover:z-10")}
     >
-      {children}
-    </button>
+      <button
+        className={cn(
+          "rounded-lg transition-all",
+          isDragging
+            ? "glow-green scale-125 cursor-grabbing"
+            : "hover:glow-green cursor-grab hover:scale-125",
+        )}
+      >
+        {children}
+      </button>
+    </div>
   );
 }
