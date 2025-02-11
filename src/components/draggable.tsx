@@ -21,6 +21,18 @@ export default function Draggable({ id, enabled, children }: Props) {
   const { draggableId } = useDraggingManager();
   const { scale } = useFrame();
 
+  const handleMouseDown: React.MouseEventHandler<HTMLDivElement> = (event) => {
+    // center the draggable on the cursor
+    const rect = event.currentTarget.getBoundingClientRect();
+    const offsetToDraggableCenter = {
+      x: event.clientX - rect.left - rect.width / 2,
+      y: event.clientY - rect.top - rect.height / 2,
+    };
+    event.currentTarget.style.transform = `translate3d(${
+      offsetToDraggableCenter.x / scale
+    }px, ${offsetToDraggableCenter.y / scale}px, 0)`;
+  };
+
   console.log("Draggable", id, enabled, draggableId);
 
   if (!enabled) {
@@ -34,6 +46,7 @@ export default function Draggable({ id, enabled, children }: Props) {
   return (
     <div
       ref={setNodeRef}
+      onMouseDown={handleMouseDown}
       style={
         transform
           ? {
