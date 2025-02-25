@@ -288,7 +288,7 @@ export default function Game() {
               {cardLocations["player-hand"].map((card) => (
                 <div
                   key={card.id}
-                  className="pointer-events-auto origin-bottom transition-transform hover:z-10 hover:scale-125"
+                  className="pointer-events-auto origin-bottom transition-transform hover:z-10"
                 >
                   <Draggable
                     id={card.id}
