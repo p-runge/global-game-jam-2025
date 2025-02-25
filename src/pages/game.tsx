@@ -123,8 +123,7 @@ export default function Game() {
 
   const handleDragEnd = (event: DragEndEvent) => {
     stopDragging();
-    const { active, over, collisions } = event;
-    console.log("collisions", collisions);
+    const { active, over } = event;
     if (!over) return;
 
     const draggedCard = getCardById(active.id);
