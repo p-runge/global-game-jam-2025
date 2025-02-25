@@ -365,6 +365,28 @@ function moveCard({
     });
   }
 
+  const maxHandCards = 5;
+  if (
+    (to === "player-1-hand" || to === "player-2-hand") &&
+    game.cardLocations[to].length >= maxHandCards
+  ) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "Hand is full",
+    });
+  }
+
+  const maxBoardCards = 5;
+  if (
+    (to === "player-1-board" || to === "player-2-board") &&
+    game.cardLocations[to].length >= maxBoardCards
+  ) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "Board is full",
+    });
+  }
+
   game.cardLocations[location] = game.cardLocations[location].filter(
     (card) => card.id !== cardId,
   );
