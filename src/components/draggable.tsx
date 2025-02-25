@@ -33,8 +33,6 @@ export default function Draggable({ id, enabled, children }: Props) {
     }px, ${offsetToDraggableCenter.y / scale}px, 0)`;
   };
 
-  console.log("Draggable", id, enabled, draggableId);
-
   if (!enabled) {
     return children;
   }

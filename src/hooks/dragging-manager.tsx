@@ -1,5 +1,7 @@
+import { useDndContext, type DragEndEvent } from "@dnd-kit/core";
 import { useCallback, useState } from "react";
 import type { DroppableId } from "~/components/droppable";
+import type { Card } from "~/server/types/models";
 import { useGameManager } from "./game-manager";
 
 declare module "@dnd-kit/core" {
@@ -98,9 +100,6 @@ export const useDraggingManager = () => {
   return { startDragging, stopDragging, moveItem, draggableId };
 };
 
-import { useDndContext, type DragEndEvent } from "@dnd-kit/core";
-import type { Card } from "~/server/types/models";
-
 export const useDndBehavior = (onDragEnd: (event: DragEndEvent) => void) => {
   const { active, over } = useDndContext();
 
@@ -118,4 +117,38 @@ export const useDndBehavior = (onDragEnd: (event: DragEndEvent) => void) => {
     draggedId: active?.id,
     overId: over?.id,
   };
+};
+
+import { type CollisionDetection } from "@dnd-kit/core";
+
+export const cursorIntersection: CollisionDetection = ({
+  droppableContainers,
+  pointerCoordinates,
+}) => {
+  if (!pointerCoordinates) {
+    return [];
+  }
+
+  const collisions = droppableContainers
+    .map((droppable) => {
+      const rect = droppable.rect.current;
+
+      if (!rect) {
+        return null;
+      }
+
+      const isOver =
+        pointerCoordinates.x >= rect.left &&
+        pointerCoordinates.x <= rect.right &&
+        pointerCoordinates.y >= rect.top &&
+        pointerCoordinates.y <= rect.bottom;
+
+      return isOver
+        ? { id: droppable.id, data: { droppableContainer: droppable } }
+        : null;
+    })
+    .filter(Boolean);
+
+  // const firstCollision = collisions.length > 0 ? [getFirstCollision(collisions, "id")!] : [];
+  return collisions;
 };

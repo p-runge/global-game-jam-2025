@@ -12,7 +12,10 @@ import Droppable, {
   isDroppableMonsterPlayer,
   type DroppableId,
 } from "~/components/droppable";
-import { useDraggingManager } from "~/hooks/dragging-manager";
+import {
+  cursorIntersection,
+  useDraggingManager,
+} from "~/hooks/dragging-manager";
 import Frame from "~/hooks/frame";
 import { useGameManager } from "~/hooks/game-manager";
 import type { Card as TCard } from "~/server/types/models";
@@ -120,7 +123,8 @@ export default function Game() {
 
   const handleDragEnd = (event: DragEndEvent) => {
     stopDragging();
-    const { active, over } = event;
+    const { active, over, collisions } = event;
+    console.log("collisions", collisions);
     if (!over) return;
 
     const draggedCard = getCardById(active.id);
@@ -133,7 +137,11 @@ export default function Game() {
 
   return (
     <Frame>
-      <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+      <DndContext
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        collisionDetection={cursorIntersection}
+      >
         <div className="relative h-full bg-[url('/background.jpg')] bg-cover bg-center">
           {/* turn info */}
           <div className="absolute left-2 top-1/2 w-[200px] -translate-y-1/2 rounded bg-primary-darkest px-2 py-1 text-center">
