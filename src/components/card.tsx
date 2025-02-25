@@ -3,6 +3,7 @@
 import { TbRulerMeasure2 } from "react-icons/tb";
 import type { Card, Monster, Spell } from "~/server/types/models";
 import { cn } from "~/utils/cn";
+import FittingText from "./fitting-text";
 
 export function Card({ card, hidden }: { card: Card; hidden: boolean }) {
   if (hidden) {
@@ -28,8 +29,8 @@ function SpellCard({ card }: { card: Spell }) {
       style={{ backgroundImage: `url(/cards/${card.image})` }}
       className="relative flex h-card w-card flex-col justify-between overflow-hidden rounded-lg border border-black bg-cover bg-center text-white shadow-sm"
     >
-      <div className="bg-black text-center text-xl font-bold leading-none tracking-tight">
-        {card.name}
+      <div className="h-4 bg-black font-bold tracking-tight text-white">
+        <FittingText>{card.name}</FittingText>
       </div>
 
       <div
@@ -77,8 +78,8 @@ function MonsterCard({ card }: { card: Monster }) {
       style={{ backgroundImage: `url(/cards/${card.image})` }}
       className="relative flex h-card w-card flex-col justify-between rounded-lg border border-black bg-cover bg-center shadow-sm"
     >
-      <div className="overflow-hidden bg-black text-center text-xl font-bold leading-none tracking-tight text-white">
-        {card.name}
+      <div className="h-4 overflow-hidden bg-black font-bold tracking-tight text-white">
+        <FittingText>{card.name}</FittingText>
       </div>
 
       <div className="flex items-center justify-center">
